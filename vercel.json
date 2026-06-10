@@ -2,18 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
-  "routes": [
+  "outputDirectory": "dist/app",
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|svg|mp4|webm)",
-      "dest": "/$1.$2"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!assets/|.*\\.(?:js|css|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot|json|map)).*)",
+      "destination": "/index.html"
     }
   ]
 }
