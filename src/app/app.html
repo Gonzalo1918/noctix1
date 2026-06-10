@@ -1,0 +1,1030 @@
+<!-- Core Noctix Client Interface -->
+<div class="min-h-screen bg-black text-[#fafafa] selection:bg-violet-600/30 selection:text-white font-sans antialiased relative overflow-x-hidden">
+  
+  <!-- Reusable Navigation Component (Desktop & Mobile) -->
+  <app-nav></app-nav>
+
+  <!-- Ambient Space Atmosphere Glow Effects -->
+  <div class="absolute top-[5%] left-[-15%] w-[600px] h-[600px] rounded-full bg-violet-900/10 blur-[160px] pointer-events-none"></div>
+  <div class="absolute top-[45%] right-[-10%] w-[600px] h-[600px] rounded-full bg-pink-900/10 blur-[180px] pointer-events-none"></div>
+  <div class="absolute bottom-[2%] left-[20%] w-[500px] h-[500px] rounded-full bg-cyan-900/10 blur-[150px] pointer-events-none"></div>
+
+  <div class="pt-6"></div>
+
+  <!-- Main View Router Display Container with Embedded Video Background -->
+  <main class="w-full max-w-7xl mx-auto px-6 pb-24 md:px-12 relative overflow-hidden rounded-[2.25rem] border border-zinc-900/70 bg-zinc-950/20 backdrop-blur-[2px] shadow-[0_30px_80px_rgba(0,0,0,0.92)] mt-5 pt-8 pl-6 pr-6 md:pl-10 md:pr-10">
+    
+    <!-- Ambient Video Background (Neon Light Trails) inside Main (Highly visible to visitor as requested) -->
+    <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-[0.55] transition-opacity duration-500">
+      <video 
+        autoplay 
+        loop 
+        muted 
+        playsinline 
+        class="w-full h-full object-cover">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-neon-light-streaks-moving-in-seamless-loop-45550-large.mp4" type="video/mp4">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-tunnel-of-blue-and-orange-neon-lights-34412-large.mp4" type="video/mp4">
+      </video>
+      <!-- Deep gradient overlay ensuring that all text, buttons, and subpanels have incredible contrast and remain perfectly legible -->
+      <div class="absolute inset-0 bg-gradient-to-b from-[#09090b]/85 via-black/10 to-[#09090b]/90"></div>
+    </div>
+
+    <!-- Relative high-contrast content layer positioned above the background video loops -->
+    <div class="relative z-10 w-full h-full">
+    
+      <!-- ==================== VIEW 1: EXPLORAR EVENTOS ==================== -->
+      @if (store.activeTab() === 'events') {
+        <section class="space-y-8 animate-fade-in" id="events-explore-panel">
+          
+          <!-- Explore Nightlife Category Bar (Compact & in Spanish) -->
+          <div class="bg-[#f2effa] text-[#1e0e49] p-4 md:p-5 rounded-2xl md:rounded-[1.75rem] border border-[#d2cee2]/60 shadow-md space-y-4 text-center overflow-hidden animate-fade-in mb-6">
+            
+            <!-- Header title in Spanish -->
+            <h2 class="text-base sm:text-lg font-display font-black tracking-tight text-[#11053b] leading-tight select-none">
+              Explorá lo más popular en la vida nocturna
+            </h2>
+
+            <!-- Categories Scrollable Navigation Track -->
+            <div class="flex items-center justify-start md:justify-center overflow-x-auto gap-3 md:gap-6 pb-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full relative">
+              @for (cat of [
+                { id: 'Todos', label: 'Todos', icon: 'apps' },
+                { id: 'Reggaeton', label: 'Cachengue & Pop', icon: 'celebration' },
+                { id: 'Electrónica', label: 'Electrónica', icon: 'nightlife' },
+                { id: 'En Vivo', label: 'Bandas en Vivo', icon: 'mic' },
+                { id: 'VIP', label: 'Sectores VIP', icon: 'star' },
+                { id: 'Bares', label: 'Barras & Bares', icon: 'local_bar' }
+              ]; track cat.id) {
+                <button 
+                  (click)="store.selectedCategory.set(cat.id)"
+                  class="flex flex-col items-center justify-center min-w-[70px] md:min-w-[85px] py-1 relative transition-all duration-300 cursor-pointer group focus:outline-none"
+                  [attr.aria-selected]="store.selectedCategory() === cat.id">
+                  
+                  <!-- Icon container with elegant colored transition based on selection -->
+                  <div 
+                    [class]="store.selectedCategory() === cat.id ? 'text-[#7c3aed] scale-110' : 'text-[#5d527a] group-hover:text-[#7c3aed] group-hover:scale-105'"
+                    class="w-7 h-7 flex items-center justify-center transition duration-300">
+                    <mat-icon class="text-lg md:text-xl">{{ cat.icon }}</mat-icon>
+                  </div>
+
+                  <!-- Text Label underneath matching snapshot typographic scale -->
+                  <span 
+                    [class]="store.selectedCategory() === cat.id ? 'text-[#1e0e49] font-bold' : 'text-[#6b5f8c] group-hover:text-[#1e0e49] font-medium'"
+                    class="text-[9px] md:text-[11px] tracking-wide mt-1 transition-colors duration-300 leading-tight">
+                    {{ cat.label }}
+                  </span>
+
+                  <!-- Solid purple highlight underline indicator for active category selection -->
+                  <div 
+                    [class]="store.selectedCategory() === cat.id ? 'scale-100 opacity-100' : 'scale-0 opacity-0 group-hover:scale-50 group-hover:opacity-70'"
+                    class="absolute bottom-0 left-[20%] right-[20%] h-[2px] bg-[#7c3aed] rounded-full transition-all duration-300 origin-center">
+                  </div>
+
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Events Grid rendering reusable EventCard Components -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (event of store.filteredEvents(); track event.id) {
+              <app-event-card 
+                [event]="event" 
+                (detail)="onViewEventDetail($event)" 
+                (buy)="onBuyOfficialEvent($event)">
+              </app-event-card>
+            } @empty {
+              <div class="col-span-full py-16 text-center space-y-4 max-w-md mx-auto">
+                <div class="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center mx-auto text-zinc-500">
+                  <mat-icon>search_off</mat-icon>
+                </div>
+                <h3 class="text-base font-bold text-white">No encontramos eventos de {{ store.selectedCategory() }}</h3>
+                <p class="text-xs text-zinc-400 leading-normal">
+                  No hay espectáculos que coincidan en esta categoría ahora. Probá con otra o volvé a revisar más tarde.
+                </p>
+                <button 
+                  (click)="store.selectedCategory.set('Todos')"
+                  class="px-4 py-2 text-xs font-bold bg-zinc-900 border border-zinc-800 text-white rounded-xl hover:bg-zinc-800 transition cursor-pointer">
+                  Mostrar todos
+                </button>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ==================== VIEW 1.5: DETALLE DE EVENTO ==================== -->
+      @if (store.activeTab() === 'event-detail') {
+        <section class="space-y-12 animate-fade-in text-left" id="event-detail-panel">
+          
+          <!-- Breadcrumb navigation -->
+          <div class="flex items-center justify-between">
+            <button 
+              (click)="store.activeTab.set('events')"
+              class="flex items-center space-x-2 text-xs font-semibold text-zinc-400 hover:text-white transition duration-150 bg-zinc-900/40 border border-zinc-805 hover:border-zinc-700 py-2 px-4 rounded-xl cursor-pointer">
+              <mat-icon class="text-base">arrow_back</mat-icon>
+              <span>Volver a Cartelera</span>
+            </button>
+            <span class="text-xs font-mono text-zinc-500 tracking-wider">PREVISIÓN EXCLUSIVA • NOCTIX</span>
+          </div>
+
+          @if (store.selectedEvent(); as event) {
+            <!-- Event specifications and purchase triggers -->
+            <div class="bg-zinc-950/60 border border-zinc-900 rounded-[2rem] p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 shadow-2xl relative overflow-hidden">
+              <div class="absolute -top-12 -right-12 w-48 h-48 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+              <!-- Cover Image -->
+              <div class="lg:col-span-5 space-y-4">
+                <div class="relative rounded-2xl overflow-hidden aspect-[4/3] lg:aspect-auto lg:h-[320px] bg-zinc-900 border border-zinc-800 shadow-lg">
+                  <img [src]="event.image" [alt]="event.title" class="w-full h-full object-cover" referrerpolicy="no-referrer" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                  <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-violet-600 text-xs font-semibold text-white shadow-lg border border-violet-500/30">
+                    {{ event.category }}
+                  </span>
+                  @if (event.badge) {
+                    <span class="absolute top-4 right-4 px-3 py-1 rounded-full bg-pink-600 text-[10px] font-bold font-mono tracking-wider uppercase text-white shadow-lg animate-pulse">
+                      {{ event.badge }}
+                    </span>
+                  }
+                </div>
+
+                <div class="p-4 bg-zinc-900/30 rounded-2xl border border-zinc-805/50 flex items-center justify-between text-xs text-zinc-400">
+                  <div class="flex items-center gap-2">
+                    <mat-icon class="text-violet-400 text-sm">enhanced_encryption</mat-icon>
+                    <span>100% Transferible</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <mat-icon class="text-pink-400 text-sm">verified</mat-icon>
+                    <span>Verificado Oficial</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Specifications -->
+              <div class="lg:col-span-7 flex flex-col justify-between space-y-6">
+                <div class="space-y-4 text-left">
+                  <h1 class="text-2xl lg:text-3.5xl font-display font-black text-white tracking-tight leading-tight">
+                    {{ event.title }}
+                  </h1>
+                  <p class="text-sm text-zinc-300 leading-relaxed max-w-xl font-normal">
+                    {{ event.description }}
+                  </p>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    @if (event.artist) {
+                      <div class="sm:col-span-2 p-4 bg-gradient-to-r from-violet-950/20 to-pink-950/10 rounded-2xl border border-violet-900/35 flex items-center space-x-3 text-left">
+                        <div class="w-10 h-10 rounded-xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
+                          <mat-icon>music_note</mat-icon>
+                        </div>
+                        <div>
+                          <span class="text-[10px] font-mono text-violet-400 uppercase tracking-wider block font-bold">ARTISTA / BANDA INVITADA</span>
+                          <span class="text-xs text-white font-extrabold tracking-tight">{{ event.artist }}</span>
+                        </div>
+                      </div>
+                    }
+
+                    <div class="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800 flex items-center space-x-3">
+                      <div class="w-10 h-10 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                        <mat-icon>pin_drop</mat-icon>
+                      </div>
+                      <div>
+                        <span class="text-[10px] font-mono text-zinc-500 uppercase block">UBICACIÓN</span>
+                        <span class="text-xs text-zinc-200 font-bold tracking-tight line-clamp-1">{{ event.location }}</span>
+                      </div>
+                    </div>
+
+                    <div class="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800 flex items-center space-x-3">
+                      <div class="w-10 h-10 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                        <mat-icon>schedule</mat-icon>
+                      </div>
+                      <div>
+                        <span class="text-[10px] font-mono text-zinc-500 uppercase block">FECHA Y HORA</span>
+                        <span class="text-xs text-zinc-200 font-bold tracking-tight">{{ event.date }} • {{ event.time }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Call to Action Pricing segment -->
+                <div class="bg-zinc-900/50 border border-zinc-800/80 p-5 rounded-2xl space-y-4">
+                  <div class="flex items-end justify-between">
+                    <div>
+                      <span class="text-[10px] font-mono text-zinc-500 uppercase block">PRECIO GENERAL</span>
+                      <span class="text-2xl font-display font-black text-white">
+                        \${{ event.price.toLocaleString('es-AR') }} <span class="text-xs text-zinc-400 font-normal">ARS</span>
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-[10px] font-mono text-zinc-500 uppercase block">ENTRADAS RESTANTES</span>
+                      <span [class]="event.stock < 15 ? 'text-red-400 font-bold' : 'text-emerald-400 font-semibold'" class="text-xs">
+                        {{ event.stock }} libres de 200
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Range Slider stock -->
+                  <div class="w-full h-1.5 bg-zinc-950 rounded-full overflow-hidden">
+                    <div 
+                      [style.width.%]="(event.stock / 200) * 100"
+                      [class]="event.stock < 15 ? 'bg-red-500' : 'bg-gradient-to-r from-violet-600 to-pink-500'"
+                      class="h-full rounded-full transition-all duration-300">
+                    </div>
+                  </div>
+
+                  @if (event.stock > 0) {
+                    <button 
+                      (click)="store.openQuickCheckout(event)"
+                      class="w-full py-3.5 text-xs font-black bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl shadow-[0_4px_30px_rgba(139,92,246,0.3)] transition duration-200 cursor-pointer flex items-center justify-center space-x-1.5 pt-3">
+                      <mat-icon class="text-base">shopping_bag</mat-icon>
+                      <span>COMPRAR ENTRADA OFICIAL</span>
+                    </button>
+                  } @else {
+                    <button 
+                      disabled
+                      class="w-full py-3 text-xs font-bold bg-zinc-800 text-zinc-600 rounded-xl cursor-not-allowed flex items-center justify-center space-x-1.5">
+                      <mat-icon class="text-base">block</mat-icon>
+                      <span>AGOTADO OFICIALMENTE</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Related Events segment -->
+            <div class="space-y-6 pt-4 text-left">
+              <div class="border-b border-zinc-900 pb-3 flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-display font-bold text-white">Eventos sugeridos por género</h3>
+                  <p class="text-xs text-zinc-400">Otros lugares populares de música o boliches de la categoría {{ event.category }}</p>
+                </div>
+                <span class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-[10px] font-semibold text-zinc-400">
+                  {{ event.category }}
+                </span>
+              </div>
+
+              <!-- Recursive related card grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @for (sim of store.similarEvents(); track sim.id) {
+                  <div 
+                    (click)="store.viewEventDetail(sim.id)"
+                    class="bg-zinc-950/30 border border-zinc-900 hover:border-zinc-800 hover:shadow-lg rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 flex flex-col">
+                    
+                    <div class="h-32 bg-zinc-900 overflow-hidden relative">
+                      <img [src]="sim.image" [alt]="sim.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerpolicy="no-referrer" />
+                      <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/20 to-transparent"></div>
+                      <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/60 text-[9px] font-semibold text-zinc-300 border border-zinc-800">
+                        {{ sim.category }}
+                      </span>
+                    </div>
+
+                    <div class="p-4 space-y-3 flex-1 flex flex-col justify-between text-left">
+                      <div class="space-y-1">
+                        <h4 class="text-sm font-semibold text-white group-hover:text-violet-400 transition-colors duration-150 line-clamp-1">
+                          {{ sim.title }}
+                        </h4>
+                        @if (sim.artist) {
+                          <p class="text-[10px] font-mono text-zinc-400 font-semibold flex items-center gap-1">
+                            <mat-icon class="text-[12px] h-3 w-3 flex items-center justify-center text-violet-400">music_note</mat-icon>
+                            <span>Lineup: {{ sim.artist }}</span>
+                          </p>
+                        }
+                        <p class="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed font-normal">
+                          {{ sim.description }}
+                        </p>
+                      </div>
+
+                      <div class="flex items-center justify-between text-[10px] font-mono text-zinc-500 border-t border-zinc-900 pt-2 mt-1">
+                        <span class="flex items-center gap-1">
+                          <mat-icon class="text-xs">pin_drop</mat-icon>
+                          <span class="max-w-[100px] truncate">{{ sim.location }}</span>
+                        </span>
+                        <span class="text-white font-bold">\${{ sim.price.toLocaleString('es-AR') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="col-span-full py-8 text-center space-y-2 border border-dashed border-zinc-900 rounded-2xl max-w-sm mx-auto">
+                    <mat-icon class="text-zinc-600 text-lg">celebration</mat-icon>
+                    <p class="text-xs text-zinc-500">No encontramos más propuestas específicas de {{ event.category }}</p>
+                    <button 
+                      (click)="store.activeTab.set('events')"
+                      class="text-[11px] font-semibold text-violet-400 hover:underline">
+                      Ver todos los boliches activos
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <div class="py-16 text-center space-y-4">
+              <mat-icon class="animate-spin text-violet-500 text-3xl">synchro</mat-icon>
+              <p class="text-sm text-zinc-400">Cargando boliche...</p>
+            </div>
+          }
+        </section>
+      }
+
+      <!-- ==================== VIEW 2: MIS TICKETS (BILLETERA) ==================== -->
+      @if (store.activeTab() === 'my-tickets') {
+        <section class="space-y-8 animate-fade-in" id="my-tickets-panel">
+          
+          <div class="border-b border-zinc-900 pb-4">
+            <h2 class="text-xl font-display font-bold text-white">Mi Billetera Digital</h2>
+            <p class="text-xs text-zinc-400">Tus entradas seguras para acceso rápido a boliches</p>
+          </div>
+
+          @if (!store.isLoggedIn()) {
+            <div class="py-16 text-center max-w-sm mx-auto space-y-6">
+              <div class="w-16 h-16 rounded-3xl bg-violet-600/10 border border-violet-500/25 flex items-center justify-center mx-auto text-violet-400">
+                <mat-icon class="text-3xl">lock</mat-icon>
+              </div>
+              <div class="space-y-2">
+                <h3 class="text-lg font-bold text-white font-display">Inicia sesión para acceder</h3>
+                <p class="text-xs text-zinc-400 leading-normal">
+                  Para consultar tus entradas adquiridas y verificar tus firmas QR dinámicas, ingresá con tu cuenta asociada.
+                </p>
+              </div>
+              <button 
+                (click)="store.activeTab.set('login'); store.authMode.set('login')"
+                class="w-full py-3 text-xs font-bold bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-[0_4px_20px_rgba(139,92,246,0.3)] transition cursor-pointer flex items-center justify-center space-x-1.5">
+                <mat-icon class="text-sm">lock_open</mat-icon>
+                <span>INICIAR SESIÓN</span>
+              </button>
+            </div>
+          } @else {
+            
+            @if (store.myTicketsList().length === 0) {
+              <div class="py-16 text-center max-w-md mx-auto space-y-6">
+                <div class="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center mx-auto text-zinc-500">
+                  <mat-icon class="text-2xl">receipt_long</mat-icon>
+                </div>
+                <div class="space-y-2">
+                  <h3 class="text-base font-bold text-white">No tenés entradas asociadas</h3>
+                  <p class="text-xs text-zinc-400 leading-normal">
+                    Parece que tu billetera electrónica en Noctix está vacía. Comprá un ticket o unite con un apodo nuevo para conseguir pases.
+                  </p>
+                </div>
+                <button 
+                  (click)="store.activeTab.set('events')"
+                  class="px-5 py-2.5 text-xs font-bold bg-white text-zinc-950 rounded-xl hover:bg-zinc-200 transition cursor-pointer">
+                  Explorar Cartelera de Eventos
+                </button>
+              </div>
+            } @else {
+              
+              <div class="space-y-6">
+                <!-- Anti-fraud metadata notification banner -->
+                <div class="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800/80 flex items-start space-x-3 text-left">
+                  <span class="text-violet-400 mt-0.5"><mat-icon class="text-sm">shield</mat-icon></span>
+                  <div class="text-xs space-y-1">
+                    <p class="font-bold text-zinc-200">Rotación Criptográfica Activa</p>
+                    <p class="text-zinc-400 leading-relaxed">
+                      Tus pases incorporan un código QR con firma rotativa anti-duplicados. Presentá tu entrada directo desde esta app al ingresar al local; no uses screenshots ya que el validador del boliche audita que coincidan con la firma rotativa viva.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Grid looping purchased tickets using Modular components -->
+                <div class="grid grid-cols-1 gap-6">
+                  @for (ticket of store.myTicketsList(); track ticket.id) {
+                    <app-ticket-card [ticket]="ticket"></app-ticket-card>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </section>
+      }
+
+      <!-- ==================== VIEW 3: MERCADO P2P REVENTA ==================== -->
+      @if (store.activeTab() === 'resale-market') {
+        <section class="space-y-8 animate-fade-in" id="resale-market-panel">
+          
+          <div class="border-b border-zinc-900 pb-4">
+            <h2 class="text-xl font-display font-bold text-white">Mercado de Reventa de Entradas</h2>
+            <p class="text-xs text-zinc-400">Comprá o Vendé de manera segura en el mercado Noctix</p>
+          </div>
+
+          <div class="p-5 bg-zinc-950/40 rounded-3xl border border-zinc-900 flex flex-col md:flex-row md:items-center md:justify-between gap-6 text-left">
+            <div class="space-y-2 max-w-2xl">
+              <h3 class="text-sm font-bold text-[#c084fc] uppercase tracking-widest font-mono">Regulación Anti-Estafas Integrada</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed font-normal">
+                Para combatir revendedores abusivos y bots, Noctix limita el margen de ganancia de reventa un máximo del +50% sobre el valor original de cartelera. Las transferencias operan bajo un contrato inteligente seguro de transferencia escrow inmediata.
+              </p>
+            </div>
+            <div class="flex-shrink-0 flex space-x-4">
+              <div class="p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800 text-center font-mono">
+                <span class="text-xs text-zinc-400 block uppercase">Tope Máximo</span>
+                <span class="text-lg font-bold text-zinc-200">+50% Original</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Offers list looping reusable MarketCard components -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @for (ticket of store.resaleMarketList(); track ticket.id) {
+              <app-market-card [ticket]="ticket"></app-market-card>
+            } @empty {
+              <div class="col-span-full py-16 text-center space-y-6 max-w-md mx-auto">
+                <div class="w-12 h-12 rounded-2xl bg-zinc-900/60 flex items-center justify-center mx-auto text-zinc-500">
+                  <mat-icon class="text-xl">hourglass_empty</mat-icon>
+                </div>
+                <p class="text-base font-bold text-white">No hay entradas para mostrar en este momento</p>
+                <p class="text-xs text-zinc-400 leading-normal">
+                  No hay usuarios revendiendo entradas en este momento. Volvé a consultar más tarde o compra pases oficiales directamente en cartelera.
+                </p>
+                <button 
+                  (click)="store.activeTab.set('events')"
+                  class="px-5 py-2.5 text-xs font-bold bg-white text-zinc-950 rounded-xl hover:bg-zinc-200 transition cursor-pointer">
+                  Buscar Entradas de Cartelera
+                </button>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ==================== VIEW 4: MANUAL TECNOLÓGICO ==================== -->
+      @if (store.activeTab() === 'how-it-works') {
+        <section class="space-y-8 animate-fade-in text-left font-sans leading-relaxed" id="how-it-works-panel">
+          
+          <div class="border-b border-zinc-900/80 pb-4">
+            <span class="text-[10px] font-mono font-bold text-[#c084fc] uppercase tracking-widest block">ESPECIFICACIÓN DE SEGURIDAD</span>
+            <h2 class="text-xl font-display font-black text-white tracking-tight mt-1">Garantías del Ecosistema de Tickets Noctix</h2>
+            <p class="text-xs text-zinc-400">Por qué las entradas tradicionales de PDF/WhatsApp fallan y cómo Noctix erradica el fraude físico</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="p-6 bg-zinc-950/40 rounded-3xl border border-zinc-900/80 space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-violet-650/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                <mat-icon>qr_code_scanner</mat-icon>
+              </div>
+              <h3 class="text-sm font-bold text-white">Firma QR Rotativa Dinámica</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed font-normal">
+                Nuestros tickets no tienen códigos estáticos. Cada 15 segundos, los servidores autorizados de Noctix fuerzan una rotación criptográfica sincronizada, generando un nuevo token único en tu app. Capturas de pantalla duplicadas fallan inmediatamente en puerta.
+              </p>
+            </div>
+
+            <div class="p-6 bg-zinc-950/40 rounded-3xl border border-zinc-900/80 space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-violet-650/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                <mat-icon>policy</mat-icon>
+              </div>
+              <h3 class="text-sm font-bold text-white">Margen Escrow Regulador</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed font-normal">
+                Para erradicar la acción manipuladora de revendedores especuladores, el sistema audita las publicaciones del mercado secundario y aplica reglas de contención de precios que restringen las ganancias a un máximo regulado de +50% sobre el valor oficial de boliche.
+              </p>
+            </div>
+
+            <div class="p-6 bg-zinc-950/40 rounded-3xl border border-zinc-900/80 space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-violet-650/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                <mat-icon>swap_horiz</mat-icon>
+              </div>
+              <h3 class="text-sm font-bold text-white">Transferencia Inmediata Escrow</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed font-normal">
+                Cuando compras una reventa verídica o boleto en el marketplace, la base telemétrica Noctix devalúa el QR anterior y firma un báculo nuevo asignado a tu apodo. No hay intermediarios manuales ni retrasos; el ticket se transfiere inmediatamente a tu billetera.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Quick interactive tutorial trigger -->
+          <div class="p-6 bg-gradient-to-r from-violet-950/20 via-pink-950/10 to-transparent border border-violet-900/30 rounded-3xl space-y-4">
+            <h3 class="text-sm font-bold text-white font-display">¿Tenés pases que no vas a usar? Vendé seguro:</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-mono text-zinc-400">
+              <div class="p-3 bg-zinc-950/50 rounded-xl border border-zinc-900">
+                <span class="text-violet-400 font-bold block mb-1 font-sans">Pase 1</span>
+                Ingresá a tu billetera interactiva en la pestaña "Mis Entradas".
+              </div>
+              <div class="p-3 bg-zinc-950/50 rounded-xl border border-zinc-900">
+                <span class="text-violet-400 font-bold block mb-1 font-sans">Pase 2</span>
+                Colocá el valor que consideres razonable (bajo el límite de precio fijado).
+              </div>
+              <div class="p-3 bg-zinc-950/50 rounded-xl border border-zinc-900">
+                <span class="text-violet-400 font-bold block mb-1 font-sans">Pase 3</span>
+                Hacé click en "REVENTAR" y se publicará de inmediato para los visitantes del portal.
+              </div>
+              <div class="p-3 bg-zinc-950/50 rounded-xl border border-zinc-900">
+                <span class="text-violet-400 font-bold block mb-1 font-sans">Pase 4</span>
+                Recibí los fondos de forma automática cuando otro usuario reclame tu ticket.
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ==================== VIEW 5: POLÍTICAS (REGLAMENTO) ==================== -->
+      @if (store.activeTab() === 'policies') {
+        <section class="space-y-8 animate-fade-in text-left leading-relaxed" id="policies-panel">
+          
+          <div class="border-b border-zinc-900 pb-4">
+            <span class="text-[10px] font-mono font-bold text-[#c084fc] uppercase tracking-widest block">REGLAMENTO Y CONDICIONES</span>
+            <h2 class="text-xl font-display font-black text-white mt-1">Acuerdo Noctix para la Reventa Ética</h2>
+            <p class="text-xs text-zinc-400">Aceptando estos lineamientos operas de forma lícita dentro del mercado regulado de espectáculos</p>
+          </div>
+
+          <div class="bg-zinc-950/40 border border-zinc-900 rounded-[2rem] p-6 lg:p-8 space-y-6">
+            
+            <div class="space-y-2">
+              <h3 class="text-sm font-bold text-[#fafafa] flex items-center gap-1.5 font-display">
+                <mat-icon class="text-violet-400 text-sm">filter_1</mat-icon>
+                <span>1. Cero Especulación (Zero Scalping)</span>
+              </h3>
+              <p class="text-xs text-zinc-400 pl-6 leading-relaxed font-normal">
+                Bajo ninguna circunstancia se admitirá la venta de boletos o accesos generales a precios inflados de forma desmedida. Los pases tienen un tope que limita el valor a un 50% por encima de la taquilla oficial. Esta medida busca resguardar la equidad de acceso para los amantes de la noche en Córdoba.
+              </p>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-sm font-bold text-[#fafafa] flex items-center gap-1.5 font-display">
+                <mat-icon class="text-violet-400 text-sm">filter_2</mat-icon>
+                <span>2. Unicidad del Portador Autorizado</span>
+              </h3>
+              <p class="text-xs text-zinc-400 pl-6 leading-relaxed font-normal">
+                Al comprar pases se asocia el apodo de tu cuenta a la firma del contrato. El lector inteligente en la taquilla del boliche verificará tu apodo. Si transfieres la entrada, Noctix desautoriza tu firma criptográfica anterior y de inmediato emite una nueva para el destinatario.
+              </p>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-sm font-bold text-[#fafafa] flex items-center gap-1.5 font-display">
+                <mat-icon class="text-violet-400 text-sm">filter_3</mat-icon>
+                <span>3. Reclamaciones Exclusivas Escrow</span>
+              </h3>
+              <p class="text-xs text-zinc-400 pl-6 leading-relaxed font-normal">
+                Cualquier reembolso o reclamo referente a suspensiones, postergaciones climáticas o cancelaciones de lineups debe gestionarse directamente con los boliches organizadores. El mercado virtual de Noctix opera como un testigo y regulador tecnológico de transferencias P2P.
+              </p>
+            </div>
+
+          </div>
+        </section>
+      }
+
+      <!-- ==================== VIEW 6: LOGIN / REGISTRO / RECUPERACIÓN ==================== -->
+      @if (store.activeTab() === 'login') {
+        <section class="max-w-md mx-auto py-8 animate-fade-in text-left">
+          
+          <div class="bg-zinc-950/60 border border-zinc-900 rounded-[2rem] p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-violet-600/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Login Section Header -->
+            <div class="text-center space-y-1.5">
+              <h2 class="text-xl font-display font-black text-white tracking-tight leading-tight">
+                @if (store.authMode() === 'login') { Acceder a Noctix }
+                @else if (store.authMode() === 'register') { Crear Cuenta Nueva }
+                @else { Recuperar Contraseña }
+              </h2>
+              <p class="text-xs text-zinc-450 leading-relaxed max-w-xs mx-auto">
+                @if (store.authMode() === 'login') { Accedo con tus datos telemétricos de red }
+                @else if (store.authMode() === 'register') { Registrate por apodo e email en segundos }
+                @else { Envío seguro de firma restauradora de contraseña }
+              </p>
+            </div>
+
+            <!-- OPTION 1: LOGIN FORM -->
+            @if (store.authMode() === 'login') {
+              <form [formGroup]="store.loginForm" (ngSubmit)="store.onLoginSubmit()" class="space-y-4">
+                <div class="space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Correo Electrónico</label>
+                  <input 
+                    type="email" 
+                    formControlName="email"
+                    placeholder="nombre@correo.com"
+                    class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+                  @if (store.loginForm.get('email')?.touched && store.loginForm.get('email')?.invalid) {
+                    <span class="text-[10px] text-red-400 block font-semibold leading-none">Ingresa un correo válido</span>
+                  }
+                </div>
+
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center">
+                    <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Contraseña</label>
+                    <button 
+                      type="button"
+                      (click)="store.authMode.set('recover')"
+                      class="text-[10px] font-mono text-violet-400 hover:underline">
+                      ¿La olvidaste?
+                    </button>
+                  </div>
+                  <input 
+                    type="password" 
+                    formControlName="password"
+                    placeholder="••••••••••••"
+                    class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+                  @if (store.loginForm.get('password')?.touched && store.loginForm.get('password')?.invalid) {
+                    <span class="text-[10px] text-red-400 block font-semibold leading-none">Debe contener mínimo 6 caracteres</span>
+                  }
+                </div>
+
+                <button 
+                  type="submit"
+                  [disabled]="store.loginForm.invalid"
+                  class="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold text-xs rounded-xl shadow-lg transition duration-200 cursor-pointer flex items-center justify-center space-x-1.5 focus:outline-none">
+                  <mat-icon class="text-sm">lock_open</mat-icon>
+                  <span>INICIAR SESIÓN SEGURA</span>
+                </button>
+              </form>
+
+              <!-- Option switcher -->
+              <div class="text-center pt-2">
+                <p class="text-xs text-zinc-500">
+                  ¿No tenés cuenta en el portal? 
+                  <button 
+                    (click)="store.authMode.set('register')"
+                    class="font-bold text-[#c084fc] hover:underline cursor-pointer ml-1 focus:outline-none">
+                    Registrarme ahora
+                  </button>
+                </p>
+              </div>
+            }
+
+            <!-- OPTION 2: REGISTER FORM -->
+            @if (store.authMode() === 'register') {
+              <form [formGroup]="store.registerForm" (ngSubmit)="store.onRegisterSubmit()" class="space-y-4">
+                
+                <div class="space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Apodo / Nickname</label>
+                  <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-zinc-500 font-bold">&#64;</span>
+                    <input 
+                      type="text" 
+                      formControlName="nickname"
+                      placeholder="lucas_club"
+                      class="w-full pl-7 pr-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+                  </div>
+                  @if (store.registerForm.get('nickname')?.touched && store.registerForm.get('nickname')?.invalid) {
+                    <span class="text-[10px] text-red-400 block font-semibold leading-none">Mínimo 3 letras o números</span>
+                  }
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Correo Electrónico</label>
+                  <input 
+                    type="email" 
+                    formControlName="email"
+                    placeholder="tu@correo.com"
+                    class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+                  @if (store.registerForm.get('email')?.touched && store.registerForm.get('email')?.invalid) {
+                    <span class="text-[10px] text-red-400 block font-semibold leading-none">Ingresa un formato de correo válido</span>
+                  }
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Contraseña de Red</label>
+                  <input 
+                    type="password" 
+                    formControlName="password"
+                    placeholder="••••••••••••"
+                    class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+                  @if (store.registerForm.get('password')?.touched && store.registerForm.get('password')?.invalid) {
+                    <span class="text-[10px] text-red-400 block font-semibold leading-none">Debe contener mínimo 6 caracteres</span>
+                  }
+                </div>
+
+                <div class="flex items-start space-x-2.5 pt-1">
+                  <input 
+                    type="checkbox" 
+                    id="termsBox"
+                    formControlName="acceptTerms"
+                    class="mt-1 bg-zinc-900 border border-zinc-800 rounded accent-violet-600" />
+                  <label for="termsBox" class="text-[10px] text-zinc-500 leading-normal select-none">
+                    Acepto el <button type="button" (click)="store.activeTab.set('policies')" class="text-violet-400 hover:underline">Reglamento Noctix</button> que restringe la reventa especulativa de pases.
+                  </label>
+                </div>
+
+                <button 
+                  type="submit"
+                  [disabled]="store.registerForm.invalid"
+                  class="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold text-xs rounded-xl shadow-lg transition duration-200 cursor-pointer flex items-center justify-center space-x-1.5 focus:outline-none">
+                  <mat-icon class="text-sm">verified_user</mat-icon>
+                  <span>CREAR MI CONSOLA SEGURA</span>
+                </button>
+              </form>
+
+              <!-- Switch options button -->
+              <div class="text-center pt-2">
+                <p class="text-xs text-zinc-500">
+                  ¿Ya estás registrado de antes? 
+                  <button 
+                    (click)="store.authMode.set('login')"
+                    class="font-bold text-[#c084fc] hover:underline cursor-pointer ml-1 focus:outline-none">
+                    Acceder con cuenta
+                  </button>
+                </p>
+              </div>
+            }
+
+            <!-- OPTION 3: PASSWORD RECOVERY -->
+            @if (store.authMode() === 'recover') {
+              <form [formGroup]="store.recoverForm" (ngSubmit)="store.onRecoverSubmit()" class="space-y-4">
+                <div class="space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Correo Electrónico registrado</label>
+                  <input 
+                    type="email" 
+                    formControlName="email"
+                    placeholder="tu@correo.com"
+                    class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+                </div>
+
+                <div class="flex space-x-2 pt-2">
+                  <button 
+                    type="button"
+                    (click)="store.authMode.set('login')"
+                    class="flex-1 py-3 text-xs font-bold bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-350 rounded-xl transition cursor-pointer">
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit"
+                    [disabled]="store.recoverForm.invalid"
+                    class="flex-1 py-3 text-xs font-bold bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-md disabled:bg-zinc-800 transition cursor-pointer">
+                    Enviar Token
+                  </button>
+                </div>
+              </form>
+            }
+
+          </div>
+        </section>
+      }
+
+    </div>
+  </main>
+
+  <!-- Reusable Footer Component -->
+  <app-footer></app-footer>
+
+  <!-- Mobile navigation baseline margin blocker element -->
+  <div class="h-20 lg:hidden pointer-events-none"></div>
+
+  <!-- Reusable Alert Toast feedback component -->
+  <app-toast></app-toast>
+
+  <!-- ==================== GUEST CHECKOUT / REGULAR PURCHASE OVERLAY MODAL ==================== -->
+  @if (store.showQuickCheckout() && store.checkoutEvent(); as event) {
+    <div class="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      
+      <!-- Modal box container -->
+      <div class="bg-zinc-950/95 border border-zinc-900 max-w-md w-full rounded-[2rem] p-6 space-y-6 shadow-2xl relative text-left animate-fade-in">
+        <div class="absolute -top-10 -right-10 w-28 h-28 bg-violet-600/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <!-- Header -->
+        <div class="flex justify-between items-start">
+          <div class="space-y-1">
+            <span class="text-[9px] font-mono bg-violet-950 text-violet-400 font-bold uppercase py-0.5 px-2 rounded-md border border-violet-900/30">Checkout Seguro Noctix</span>
+            <h3 class="text-lg font-display font-black text-white leading-tight mt-1">{{ event.title }}</h3>
+            <p class="text-[11.5px] text-zinc-400 font-normal leading-normal">{{ event.location }}</p>
+          </div>
+          <button 
+            (click)="store.closeQuickCheckout()"
+            class="text-zinc-500 hover:text-white transition p-1 cursor-pointer focus:outline-none">
+            <mat-icon class="text-sm">close</mat-icon>
+          </button>
+        </div>
+
+        <!-- Form elements -->
+        <form [formGroup]="store.checkoutForm" (ngSubmit)="store.submitQuickCheckout()" class="space-y-5">
+          
+          <!-- Email locator -->
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Correo de Envío</label>
+              @if (store.isLoggedIn()) {
+                <span class="text-[9px] font-mono text-emerald-400 font-bold">✓ SESIÓN VINCULADA</span>
+              } @else {
+                <span class="text-[9px] font-mono text-yellow-450 font-bold">Creará un apodo rápido de forma automática</span>
+              }
+            </div>
+            <input 
+              type="email" 
+              formControlName="email"
+              placeholder="nombre@tucorreo.com"
+              [readonly]="store.isLoggedIn()"
+              class="w-full px-4 py-2 bg-zinc-900 read-only:bg-zinc-900/50 read-only:text-zinc-500 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-mono focus:border-violet-600 focus:outline-none transition duration-150" />
+            @if (store.checkoutForm.get('email')?.touched && store.checkoutForm.get('email')?.invalid) {
+              <span class="text-[10px] text-rose-450 block font-semibold leading-none">Ingresa un correo de envío válido</span>
+            }
+          </div>
+
+          <!-- Quantity controller -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Cant. Entradas</label>
+              <input 
+                type="number" 
+                formControlName="quantity"
+                min="1" 
+                max="5"
+                class="w-full px-4 py-1.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white font-mono text-xs font-bold focus:border-violet-600 focus:outline-none transition" />
+              <p class="text-[8px] text-zinc-550 leading-none">Por persona: máximo 5</p>
+            </div>
+
+            <!-- Payment gateway mock -->
+            <div class="space-y-1">
+              <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Método de Pago</label>
+              <select 
+                formControlName="paymentMethod"
+                class="w-full px-4 py-1.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white text-xs font-medium focus:border-violet-600 focus:outline-none transition">
+                <option value="MercadoPago">MercadoPago</option>
+                <option value="Tarjeta de Credito">Tarjeta de Crédito</option>
+                <option value="Dinero en Cuenta">Dinero en Cuenta</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Price math specifications calculation block -->
+          <div class="p-3.5 bg-zinc-900/40 border border-zinc-900/60 rounded-xl space-y-2 text-xs font-mono">
+            <div class="flex justify-between items-center text-zinc-450 text-[11px]">
+              <span>Precio Unitario:</span>
+              <span>\${{ event.price.toLocaleString('es-AR') }}</span>
+            </div>
+            <div class="flex justify-between items-center text-zinc-450 text-[11px]">
+              <span>Cantidad de pases:</span>
+              <span class="font-bold text-white">{{ store.checkoutForm.get('quantity')?.value }}</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-zinc-900/60 pt-2 text-white font-black">
+              <span class="font-sans">Total Neto:</span>
+              <span class="text-sm text-violet-400">\${{ (event.price * (store.checkoutForm.get('quantity')?.value || 1)).toLocaleString('es-AR') }} ARS</span>
+            </div>
+          </div>
+
+          <!-- Checkout call actions -->
+          <div class="flex space-x-2.5 pt-2">
+            <button 
+              type="button" 
+              (click)="store.closeQuickCheckout()"
+              class="flex-1 py-3 text-xs bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white rounded-xl transition cursor-pointer">
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              [disabled]="store.checkoutForm.invalid"
+              class="flex-1 py-3 text-xs font-bold bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-850 text-white rounded-xl shadow-lg transition duration-150 cursor-pointer flex items-center justify-center space-x-1 focus:outline-none">
+              <mat-icon class="text-sm">security</mat-icon>
+              <span>Generar Tickets</span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  }
+
+  <!-- ==================== CONSOLE / OPERATOR OVERLAY PANEL MODAL ==================== -->
+  @if (store.isAdminOpen()) {
+    <div class="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      
+      <!-- Main console box -->
+      <div class="bg-zinc-950/95 border border-zinc-900 max-w-2xl w-full rounded-[2rem] p-6 space-y-6 shadow-2xl text-left relative animate-fade-in ml-auto mr-auto">
+        <div class="absolute -top-16 -left-16 w-36 h-36 bg-blue-600/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <!-- Header title -->
+        <div class="flex justify-between items-start border-b border-zinc-900/80 pb-3">
+          <div class="space-y-0.5">
+            <span class="text-[9px] font-mono text-zinc-500 block uppercase">CONSOLA OPERATIVA EXCLUSIVA</span>
+            <h3 class="text-lg font-display font-black text-white flex items-center gap-1.5 leading-tight">
+              <mat-icon class="text-blue-400 text-lg">admin_panel_settings</mat-icon>
+              <span>Módulo de Control y Depuración Noctix</span>
+            </h3>
+          </div>
+          <button 
+            (click)="store.isAdminOpen.set(false)"
+            class="text-zinc-500 hover:text-white transition p-1 cursor-pointer focus:outline-none">
+            <mat-icon class="text-sm">close</mat-icon>
+          </button>
+        </div>
+
+        <!-- Embed the dynamic Telemetry Logger panel directly at the top of Operator controls -->
+        <div class="space-y-2">
+          <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Historial de Red</label>
+          <app-telemetry></app-telemetry>
+        </div>
+
+        <!-- Section 2: Rapid Debug Shortcuts -->
+        <div class="space-y-3">
+          <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Depuración de inventarios y datos</label>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            
+            <button 
+              type="button" 
+              (click)="store.restockEvents()"
+              class="p-4 bg-zinc-900/40 hover:bg-zinc-900/80 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl transition text-left cursor-pointer space-y-1 focus:outline-none">
+              <div class="flex items-center space-x-2 text-xs font-bold text-[#60a5fa]">
+                <mat-icon class="text-base">shuffle_on</mat-icon>
+                <span>Suministro Forzado general</span>
+              </div>
+              <p class="text-[10px] text-zinc-450 leading-relaxed font-normal">
+                Suma +50 pases de forma inmediata a espectáculos con niveles crítico o bajo de entradas.
+              </p>
+            </button>
+
+            <div class="p-4 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl select-none text-left space-y-1">
+              <div class="text-xs font-bold text-violet-400 flex items-center space-x-1.5">
+                <mat-icon class="text-base">verified</mat-icon>
+                <span>Fórmula Algorítmica</span>
+              </div>
+              <p class="text-[10px] text-zinc-450 leading-relaxed font-normal">
+                Las firmas dinámicas son verificables mediante claves simétricas asimétricas rotativas cada 15 segundos.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 3: Add new event listing from panel -->
+        <div class="space-y-3 pt-2">
+          <label class="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">Registrar Espectáculo de Boliche</label>
+          
+          <form [formGroup]="store.adminEventForm" (ngSubmit)="store.addAdminEvent()" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <div class="space-y-1 text-left">
+                <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Nombre del Evento</label>
+                <input 
+                  type="text" 
+                  formControlName="title"
+                  placeholder="Club Paraguay Winter Edition"
+                  class="w-full px-3.5 py-2 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-sans focus:border-blue-600 focus:outline-none transition duration-150" />
+              </div>
+
+              <div class="space-y-1 text-left">
+                <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Coordenada o Ubicación del Local</label>
+                <input 
+                  type="text" 
+                  formControlName="location"
+                  placeholder="Córdoba, Valle de Punilla"
+                  class="w-full px-3.5 py-2 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-sans focus:border-blue-600 focus:outline-none transition duration-150" />
+              </div>
+
+              <div class="space-y-1 text-left">
+                <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Lineup / Artista Destacado</label>
+                <input 
+                  type="text" 
+                  formControlName="artist"
+                  placeholder="Steve Aoki"
+                  class="w-full px-3.5 py-2 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-sans focus:border-blue-600 focus:outline-none transition duration-150" />
+              </div>
+
+              <div class="space-y-1 text-left">
+                <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Categoría de Espectáculo</label>
+                <select 
+                  formControlName="category"
+                  class="w-full px-3.5 py-2 bg-zinc-900 border border-zinc-850 rounded-xl text-white text-xs font-medium focus:border-blue-600 focus:outline-none transition">
+                  <option value="Electrónica">Electrónica</option>
+                  <option value="Reggaeton">Cachengue & Pop</option>
+                  <option value="En Vivo">Bandas en Vivo</option>
+                </select>
+              </div>
+
+              <div class="space-y-1 text-left">
+                <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Precio de Taquilla ($ ARS)</label>
+                <input 
+                  type="number" 
+                  formControlName="price"
+                  class="w-full px-3.5 py-1.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white font-mono text-xs font-bold focus:border-blue-600 focus:outline-none transition" />
+              </div>
+
+              <div class="space-y-1 text-left">
+                <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Stock Inicial de pases</label>
+                <input 
+                  type="number" 
+                  formControlName="stock"
+                  class="w-full px-3.5 py-1.5 bg-zinc-900 border border-zinc-850 rounded-xl text-white font-mono text-xs font-bold focus:border-blue-600 focus:outline-none transition" />
+              </div>
+
+            </div>
+
+            <!-- Block Description -->
+            <div class="space-y-1 text-left col-span-full">
+              <label class="text-[8px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">Resumen del boliche o fiesta</label>
+              <textarea 
+                formControlName="description"
+                rows="2"
+                placeholder="Exhibición tecnológica y sets envolventes para una noche sin precedentes..."
+                class="w-full px-3.5 py-2 bg-zinc-900 border border-zinc-850 rounded-xl text-white placeholder:text-zinc-650 text-xs font-sans focus:border-blue-600 focus:outline-none resize-none transition duration-150"></textarea>
+            </div>
+
+            <!-- Form submissions action items -->
+            <div class="flex space-x-2.5 pt-2">
+              <button 
+                type="button" 
+                (click)="store.isAdminOpen.set(false)"
+                class="flex-1 py-2.5 text-xs bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white rounded-xl transition cursor-pointer">
+                Cerrar Consola
+              </button>
+              <button 
+                type="submit" 
+                [disabled]="store.adminEventForm.invalid"
+                class="flex-1 py-2.5 text-xs font-black bg-blue-640 hover:bg-blue-600 disabled:bg-zinc-850 text-white rounded-xl shadow-md transition cursor-pointer flex items-center justify-center space-x-1.5 focus:outline-none">
+                <mat-icon class="text-sm">add_box</mat-icon>
+                <span>REVELAR EVENTO</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,8 @@
+{
+  "name": "Noctix",
+  "description": "Noctix - Compra y venta transparente de tickets de boliche verificados con reventa garantizada y QR dinámico.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
