@@ -1,32 +1,23 @@
 <!-- Core Noctix Client Interface -->
-<div class="min-h-screen bg-black text-[#fafafa] selection:bg-violet-600/30 selection:text-white font-sans antialiased relative overflow-x-hidden">
+<div class="min-h-screen bg-[#05050b] bg-gradient-to-br from-[#04040a] via-[#0c0d28] to-[#010103] animated-gradient-bg text-[#fafafa] selection:bg-violet-600/30 selection:text-white font-sans antialiased relative overflow-x-hidden">
   
   <!-- Reusable Navigation Component (Desktop & Mobile) -->
   <app-nav></app-nav>
 
   <!-- Ambient Space Atmosphere Glow Effects -->
-  <div class="absolute top-[5%] left-[-15%] w-[600px] h-[600px] rounded-full bg-violet-900/10 blur-[160px] pointer-events-none"></div>
-  <div class="absolute top-[45%] right-[-10%] w-[600px] h-[600px] rounded-full bg-pink-900/10 blur-[180px] pointer-events-none"></div>
-  <div class="absolute bottom-[2%] left-[20%] w-[500px] h-[500px] rounded-full bg-cyan-900/10 blur-[150px] pointer-events-none"></div>
+  <div class="absolute top-[5%] left-[-15%] w-[600px] h-[600px] rounded-full bg-violet-900/12 blur-[160px] pointer-events-none"></div>
+  <div class="absolute top-[45%] right-[-10%] w-[600px] h-[600px] rounded-full bg-pink-900/12 blur-[180px] pointer-events-none"></div>
+  <div class="absolute bottom-[2%] left-[20%] w-[500px] h-[500px] rounded-full bg-cyan-900/12 blur-[150px] pointer-events-none"></div>
 
   <div class="pt-6"></div>
 
   <!-- Main View Router Display Container with Embedded Video Background -->
-  <main class="w-full max-w-7xl mx-auto px-6 pb-24 md:px-12 relative overflow-hidden rounded-[2.25rem] border border-zinc-900/70 bg-zinc-950/20 backdrop-blur-[2px] shadow-[0_30px_80px_rgba(0,0,0,0.92)] mt-5 pt-8 pl-6 pr-6 md:pl-10 md:pr-10">
+  <main class="w-full max-w-7xl mx-auto px-6 pb-24 md:px-12 relative overflow-hidden rounded-[2.25rem] border border-zinc-900/70 bg-zinc-950/40 backdrop-blur-md shadow-[0_30px_80px_rgba(0,0,0,0.92)] mt-5 pt-8 pl-6 pr-6 md:pl-10 md:pr-10">
     
-    <!-- Ambient Video Background (Neon Light Trails) inside Main (Highly visible to visitor as requested) -->
-    <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-[0.55] transition-opacity duration-500">
-      <video 
-        autoplay 
-        loop 
-        muted 
-        playsinline 
-        class="w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-neon-light-streaks-moving-in-seamless-loop-45550-large.mp4" type="video/mp4">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-tunnel-of-blue-and-orange-neon-lights-34412-large.mp4" type="video/mp4">
-      </video>
-      <!-- Deep gradient overlay ensuring that all text, buttons, and subpanels have incredible contrast and remain perfectly legible -->
-      <div class="absolute inset-0 bg-gradient-to-b from-[#09090b]/85 via-black/10 to-[#09090b]/90"></div>
+    <!-- Seamless deep subtle background accent for high-contrast elite reading -->
+    <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-gradient-to-b from-[#08080f]/90 via-[#0c0d18]/40 to-[#040409]/95 transition-opacity duration-500">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.06),transparent_45%)]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(236,72,153,0.05),transparent_40%)]"></div>
     </div>
 
     <!-- Relative high-contrast content layer positioned above the background video loops -->
@@ -35,53 +26,271 @@
       <!-- ==================== VIEW 1: EXPLORAR EVENTOS ==================== -->
       @if (store.activeTab() === 'events') {
         <section class="space-y-8 animate-fade-in" id="events-explore-panel">
+
+          <!-- ==================== FEATURED EVENTS CAROUSEL ==================== -->
+          @if (featuredEvents().length > 0) {
+            <div class="space-y-4 mb-4 relative z-10" id="featured-carousel-section">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="flex h-2.5 w-2.5 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-violet-500"></span>
+                  </span>
+                  <h2 class="text-base md:text-lg font-display font-black tracking-tight text-white select-none uppercase">
+                    Eventos Destacados
+                  </h2>
+                </div>
+                
+                <!-- Navigation buttons for carousel -->
+                <div class="flex items-center space-x-1.5">
+                  <button 
+                    (click)="prevFeatured()" 
+                    class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 flex items-center justify-center transition cursor-pointer"
+                    title="Anterior">
+                    <mat-icon class="text-xs">chevron_left</mat-icon>
+                  </button>
+                  <button 
+                    (click)="nextFeatured()" 
+                    class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 flex items-center justify-center transition cursor-pointer"
+                    title="Siguiente">
+                    <mat-icon class="text-xs">chevron_right</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Main Carousel Frame -->
+              <div class="relative overflow-hidden rounded-[2rem] border border-zinc-850/50 bg-[#06060c]/60 shadow-[0_15px_40px_rgba(0,0,0,0.6)] min-h-[340px] md:min-h-[280px] flex items-center">
+                
+                <!-- Carousel Track / Slides -->
+                @for (evt of featuredEvents(); track evt.id) {
+                  @if (activeCarouselIndex() === $index) {
+                    <div class="w-full h-full flex flex-col md:flex-row relative animate-fade-in">
+                      
+                      <!-- Absolute backdrop photo layer -->
+                      <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+                        <img [src]="evt.image" [alt]="evt.title" class="w-full h-full object-cover scale-105 filter blur-sm opacity-20" referrerpolicy="no-referrer" />
+                        <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-[#06060c]"></div>
+                      </div>
+
+                      <!-- Image portion -->
+                      <div class="w-full md:w-[40%] h-44 md:h-[280px] relative overflow-hidden shrink-0 z-10 border-b md:border-b-0 md:border-r border-zinc-900/60">
+                        <img [src]="evt.image" [alt]="evt.title" class="w-full h-full object-cover" referrerpolicy="no-referrer" />
+                        <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-transparent to-black/80 md:to-transparent"></div>
+                        <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-violet-600/90 backdrop-blur-sm text-[10px] font-bold text-white shadow-md border border-violet-500/20">
+                          {{ evt.category }}
+                        </span>
+                        @if (evt.badge) {
+                          <span class="absolute bottom-3 left-3 px-2.5 py-0.5 rounded-full bg-pink-600/90 backdrop-blur-sm text-[9px] font-bold tracking-wider font-mono text-white shadow-md uppercase animate-pulse">
+                            {{ evt.badge }}
+                          </span>
+                        }
+                      </div>
+
+                      <!-- Content portion -->
+                      <div class="p-5 md:p-6 lg:p-7 flex-1 flex flex-col justify-between relative z-10 text-left h-full">
+                        <div class="space-y-3">
+                          <div class="space-y-1">
+                            <span class="text-[9px] font-mono text-violet-400 font-bold uppercase tracking-wider block">PREVENTA EXCLUSIVA</span>
+                            <h3 class="text-base md:text-xl font-display font-black text-white hover:text-violet-400 transition cursor-pointer leading-snug tracking-tight" (click)="onViewEventDetail(evt.id)">
+                              {{ evt.title }}
+                            </h3>
+                          </div>
+                          
+                          <p class="text-zinc-400 text-[11px] md:text-xs line-clamp-2 leading-relaxed font-normal max-w-xl">
+                            {{ evt.description }}
+                          </p>
+
+                          <!-- Meta specifications -->
+                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 pt-1 max-w-md">
+                            <div class="flex items-center space-x-2 text-zinc-300">
+                              <mat-icon class="text-violet-400 text-base">calendar_today</mat-icon>
+                              <span class="text-[11px] font-semibold">{{ evt.date }}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-zinc-300">
+                              <mat-icon class="text-pink-400 text-base">schedule</mat-icon>
+                              <span class="text-[11px] font-semibold">{{ evt.time }}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-zinc-300 sm:col-span-2">
+                              <mat-icon class="text-[#c084fc] text-base">place</mat-icon>
+                              <span class="text-[11px] truncate font-semibold">{{ evt.location }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Price / CTA area -->
+                        <div class="flex items-center justify-between border-t border-zinc-900/60 pt-3.5 mt-4">
+                          <div>
+                            <span class="text-[9px] font-mono text-zinc-500 uppercase block leading-none">PRECIO OFICIAL</span>
+                            <span class="text-sm md:text-base font-black text-emerald-400 leading-none">
+                              ${{ evt.price.toLocaleString('es-AR') }}
+                            </span>
+                          </div>
+
+                          <div class="flex items-center space-x-2">
+                            <button 
+                              (click)="onViewEventDetail(evt.id)"
+                              class="px-3 py-1.5 text-[11px] font-semibold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white rounded-xl transition cursor-pointer flex items-center">
+                              <span>Detalle</span>
+                            </button>
+                            <button 
+                              (click)="onBuyOfficialEvent(evt)"
+                              class="px-3.5 py-1.5 text-[11px] font-bold bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 hover:scale-[1.02] text-white rounded-xl shadow-lg transition-all duration-150 cursor-pointer flex items-center space-x-1">
+                              <mat-icon class="text-xs">confirmation_number</mat-icon>
+                              <span>Comprar</span>
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  }
+                }
+
+                <!-- Slide indicators dots -->
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center space-x-2 z-20">
+                  @for (dot of featuredEvents(); track dot.id) {
+                    <button 
+                      (click)="setCarouselIndex($index)" 
+                      [class]="activeCarouselIndex() === $index ? 'w-5 bg-violet-500' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500'"
+                      class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
+                      [title]="'Ir al slide ' + ($index + 1)">
+                    </button>
+                  }
+                </div>
+
+              </div>
+            </div>
+          }
           
           <!-- Explore Nightlife Category Bar (Compact & in Spanish) -->
           <div class="bg-[#f2effa] text-[#1e0e49] p-4 md:p-5 rounded-2xl md:rounded-[1.75rem] border border-[#d2cee2]/60 shadow-md space-y-4 text-center overflow-hidden animate-fade-in mb-6">
             
-            <!-- Header title in Spanish -->
-            <h2 class="text-base sm:text-lg font-display font-black tracking-tight text-[#11053b] leading-tight select-none">
-              Explorá lo más popular en la vida nocturna
-            </h2>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-left">
+              <!-- Header title in Spanish -->
+              <div>
+                <h2 class="text-base sm:text-lg font-display font-black tracking-tight text-[#11053b] leading-tight select-none">
+                  Explorá lo más popular en la vida nocturna
+                </h2>
+                <p class="text-[10px] md:text-xs text-[#5d527a] font-medium">Buscá por tu género musical preferido o por fecha</p>
+              </div>
 
-            <!-- Categories Scrollable Navigation Track -->
-            <div class="flex items-center justify-start md:justify-center overflow-x-auto gap-3 md:gap-6 pb-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full relative">
-              @for (cat of [
-                { id: 'Todos', label: 'Todos', icon: 'apps' },
-                { id: 'Reggaeton', label: 'Cachengue & Pop', icon: 'celebration' },
-                { id: 'Electrónica', label: 'Electrónica', icon: 'nightlife' },
-                { id: 'En Vivo', label: 'Bandas en Vivo', icon: 'mic' },
-                { id: 'VIP', label: 'Sectores VIP', icon: 'star' },
-                { id: 'Bares', label: 'Barras & Bares', icon: 'local_bar' }
-              ]; track cat.id) {
+              <!-- Reset Filters general badge -->
+              @if (store.selectedCategory() !== 'Todos' || store.startDateFilter() || store.endDateFilter()) {
                 <button 
-                  (click)="store.selectedCategory.set(cat.id)"
-                  class="flex flex-col items-center justify-center min-w-[70px] md:min-w-[85px] py-1 relative transition-all duration-300 cursor-pointer group focus:outline-none"
-                  [attr.aria-selected]="store.selectedCategory() === cat.id">
-                  
-                  <!-- Icon container with elegant colored transition based on selection -->
-                  <div 
-                    [class]="store.selectedCategory() === cat.id ? 'text-[#7c3aed] scale-110' : 'text-[#5d527a] group-hover:text-[#7c3aed] group-hover:scale-105'"
-                    class="w-7 h-7 flex items-center justify-center transition duration-300">
-                    <mat-icon class="text-lg md:text-xl">{{ cat.icon }}</mat-icon>
-                  </div>
-
-                  <!-- Text Label underneath matching snapshot typographic scale -->
-                  <span 
-                    [class]="store.selectedCategory() === cat.id ? 'text-[#1e0e49] font-bold' : 'text-[#6b5f8c] group-hover:text-[#1e0e49] font-medium'"
-                    class="text-[9px] md:text-[11px] tracking-wide mt-1 transition-colors duration-300 leading-tight">
-                    {{ cat.label }}
-                  </span>
-
-                  <!-- Solid purple highlight underline indicator for active category selection -->
-                  <div 
-                    [class]="store.selectedCategory() === cat.id ? 'scale-100 opacity-100' : 'scale-0 opacity-0 group-hover:scale-50 group-hover:opacity-70'"
-                    class="absolute bottom-0 left-[20%] right-[20%] h-[2px] bg-[#7c3aed] rounded-full transition-all duration-300 origin-center">
-                  </div>
-
+                  (click)="store.clearFilters()"
+                  class="self-start sm:self-auto text-[10px] font-bold text-violet-700 hover:text-violet-900 flex items-center space-x-1 transition cursor-pointer bg-violet-100 border border-violet-200 px-3 py-1.5 rounded-xl hover:bg-violet-200/60 shadow-sm">
+                  <mat-icon class="text-xs">filter_alt_off</mat-icon>
+                  <span>Limpiar Filtros</span>
                 </button>
               }
             </div>
+
+            <!-- COMPACT MOBILE-FIRST FILTERS (Visible on Mobile, Hidden on Larger Screens) -->
+            <div class="block sm:hidden space-y-3 pt-1">
+              
+              <div class="grid grid-cols-12 gap-2">
+                <!-- Genre Dropdown Select -->
+                <div class="col-span-8 flex flex-col text-left space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-[#5d527a] uppercase tracking-wider">Categoría / Género</label>
+                  <div class="relative">
+                    <select 
+                      [value]="store.selectedCategory()"
+                      (change)="store.selectedCategory.set($any($event.target).value)"
+                      class="w-full text-xs font-semibold bg-white border border-[#d2cee2] text-[#1e0e49] pl-3 pr-8 py-2.5 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-violet-500/40 cursor-pointer shadow-sm">
+                      <option value="Todos">Todos los géneros</option>
+                      <option value="Reggaeton">Cachengue & Pop</option>
+                      <option value="Electrónica">Electrónica</option>
+                      <option value="En Vivo">Bandas en Vivo</option>
+                      <option value="VIP">Sectores VIP</option>
+                      <option value="Bares">Barras & Bares</option>
+                    </select>
+                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 text-violet-700 pointer-events-none flex items-center">
+                      <mat-icon class="text-lg">keyboard_arrow_down</mat-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Clean/Reset Filter trigger for Mobile -->
+                <div class="col-span-4 flex flex-col text-left space-y-1">
+                  <span class="text-[9px] font-mono font-bold text-[#5d527a] uppercase tracking-wider">Limpiar</span>
+                  <button 
+                    (click)="store.clearFilters()"
+                    [disabled]="store.selectedCategory() === 'Todos' && !store.startDateFilter() && !store.endDateFilter()"
+                    class="w-full text-xs font-bold bg-white hover:bg-rose-50 disabled:opacity-50 disabled:hover:bg-white text-rose-600 border border-[#d2cee2] h-[37.2px] rounded-xl flex items-center justify-center transition cursor-pointer shadow-sm">
+                    <mat-icon class="text-sm">delete_sweep</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Date inputs on Mobile (Desde & Hasta) next to each other -->
+              <div class="grid grid-cols-2 gap-2">
+                <div class="flex flex-col text-left space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-[#5d527a] uppercase tracking-wider">Fecha Desde</label>
+                  <input 
+                    type="date"
+                    [value]="store.startDateFilter()"
+                    (change)="store.startDateFilter.set($any($event.target).value)"
+                    class="w-full text-xs font-semibold bg-white border border-[#d2cee2] text-[#1e0e49] px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/40 cursor-pointer shadow-sm min-h-[36px]" />
+                </div>
+                <div class="flex flex-col text-left space-y-1">
+                  <label class="text-[9px] font-mono font-bold text-[#5d527a] uppercase tracking-wider">Fecha Hasta</label>
+                  <input 
+                    type="date"
+                    [value]="store.endDateFilter()"
+                    (change)="store.endDateFilter.set($any($event.target).value)"
+                    class="w-full text-xs font-semibold bg-white border border-[#d2cee2] text-[#1e0e49] px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/40 cursor-pointer shadow-sm min-h-[36px]" />
+                </div>
+              </div>
+
+            </div>
+
+            <!-- DESKTOP / TABLET BAR FILTERS (Hidden on Mobile (sm), Visible on sm and larger viewports) -->
+            <div class="hidden sm:flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+              
+              <!-- Categories Pill Scroll Track for Desktop/Tablet -->
+              <div class="flex items-center overflow-x-auto gap-2 pb-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden grow">
+                @for (cat of [
+                  { id: 'Todos', label: 'Todos', icon: 'apps' },
+                  { id: 'Reggaeton', label: 'Cachengue & Pop', icon: 'celebration' },
+                  { id: 'Electrónica', label: 'Electrónica', icon: 'nightlife' },
+                  { id: 'En Vivo', label: 'Bandas en Vivo', icon: 'mic' },
+                  { id: 'VIP', label: 'VIP', icon: 'star' },
+                  { id: 'Bares', label: 'Bares', icon: 'local_bar' }
+                ]; track cat.id) {
+                  <button 
+                    (click)="store.selectedCategory.set(cat.id)"
+                    class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer text-left focus:outline-none select-none text-xs"
+                    [class]="store.selectedCategory() === cat.id ? 'bg-violet-600 text-white border-violet-600 shadow-md font-bold' : 'bg-white text-[#5d527a] border-[#d2cee2] hover:bg-violet-50/50 hover:text-violet-700 font-semibold'">
+                    <mat-icon class="text-base">{{ cat.icon }}</mat-icon>
+                    <span>{{ cat.label }}</span>
+                  </button>
+                }
+              </div>
+
+              <!-- Date Inputs for Desktop / Tablet -->
+              <div class="flex items-center space-x-2 shrink-0">
+                <div class="flex items-center bg-white border border-[#d2cee2] rounded-xl px-2.5 py-1.5 text-xs shadow-sm">
+                  <span class="text-[9px] font-mono text-[#5d527a] font-bold uppercase mr-1.5">DESDE:</span>
+                  <input 
+                    type="date"
+                    [value]="store.startDateFilter()"
+                    (change)="store.startDateFilter.set($any($event.target).value)"
+                    class="bg-transparent border-none text-[#1e0e49] focus:outline-none cursor-pointer max-w-[110px] p-0 text-xs font-semibold focus:ring-0" />
+                </div>
+                
+                <div class="flex items-center bg-white border border-[#d2cee2] rounded-xl px-2.5 py-1.5 text-xs shadow-sm">
+                  <span class="text-[9px] font-mono text-[#5d527a] font-bold uppercase mr-1.5">HASTA:</span>
+                  <input 
+                    type="date"
+                    [value]="store.endDateFilter()"
+                    (change)="store.endDateFilter.set($any($event.target).value)"
+                    class="bg-transparent border-none text-[#1e0e49] focus:outline-none cursor-pointer max-w-[110px] p-0 text-xs font-semibold focus:ring-0" />
+                </div>
+              </div>
+
+            </div>
+
           </div>
 
           <!-- Events Grid rendering reusable EventCard Components -->
@@ -108,6 +317,85 @@
                 </button>
               </div>
             }
+          </div>
+
+          <!-- ==================== FAQ SECTION ==================== -->
+          <div class="pt-16 pb-8 border-t border-zinc-900/50 mt-16 space-y-10" id="faqs-section">
+            <div class="text-center space-y-2">
+              <span class="text-[10px] font-mono font-bold text-[#c084fc] tracking-widest uppercase block">PREGUNTAS FRECUENTES</span>
+              <h2 class="text-2xl md:text-3xl font-display font-black text-white tracking-tight">Resolvemos tus dudas</h2>
+              <div class="w-12 h-[3px] bg-gradient-to-r from-violet-600 to-pink-500 mx-auto rounded-full mt-3"></div>
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-4">
+              @for (faq of faqs; track $index) {
+                <div 
+                  (click)="toggleFaq($index)"
+                  [class]="'group border rounded-2xl p-4 md:p-5 transition-all duration-200 cursor-pointer text-left select-none max-w-full ' + (expandedFaq() === $index ? 'border-violet-500/20 bg-zinc-950/50' : 'border-zinc-900 bg-zinc-950/20 hover:bg-zinc-900/20')">
+                  
+                  <div class="flex items-center justify-between gap-4">
+                    <h3 [class.text-violet-400]="expandedFaq() === $index" class="text-xs md:text-sm font-bold text-white transition-colors duration-200">
+                      {{ faq.question }}
+                    </h3>
+                    <div 
+                      [class]="'w-7 h-7 rounded-full flex items-center justify-center border group-hover:text-white transition-all duration-200 shrink-0 ' + (expandedFaq() === $index ? 'bg-violet-950/40 text-violet-400 border-violet-500/10' : 'bg-zinc-900 text-zinc-400 border-zinc-850')">
+                      <mat-icon class="text-sm transition-transform duration-250" [style.transform]="expandedFaq() === $index ? 'rotate(180deg)' : 'rotate(0)'">
+                        keyboard_arrow_down
+                      </mat-icon>
+                    </div>
+                  </div>
+
+                  @if (expandedFaq() === $index) {
+                    <div class="mt-4 pt-4 border-t border-zinc-900/85 text-xs text-zinc-400 leading-relaxed font-normal animate-fade-in">
+                      {{ faq.answer }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- ==================== NEWSLETTER SECTION ==================== -->
+          <div class="py-12 border-t border-zinc-900/50" id="newsletter-section">
+            <div class="bg-gradient-to-b from-zinc-950/60 to-black/30 p-8 md:p-12 rounded-[2rem] border border-zinc-900/60 max-w-3xl mx-auto text-center space-y-6 relative overflow-hidden backdrop-blur-sm shadow-xl">
+              <!-- Radial gradient highlight in the center for cosmic look -->
+              <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-48 h-48 bg-violet-600/10 rounded-full blur-[60px] pointer-events-none"></div>
+
+              <!-- Sparkle icon header -->
+              <div class="flex justify-center">
+                <div class="w-12 h-12 bg-violet-950/50 border border-violet-500/20 rounded-full flex items-center justify-center text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
+                  <mat-icon class="text-lg">auto_awesome</mat-icon>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h2 class="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">No te pierdas nada</h2>
+                <p class="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
+                  Suscríbete y recibe las mejores ofertas y preventa exclusiva de eventos de la ciudad.
+                </p>
+              </div>
+
+              <!-- Newsletter inline formulation -->
+              <div class="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto pt-2 relative z-10">
+                <div class="relative w-full">
+                  <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                    <mat-icon class="text-sm">mail</mat-icon>
+                  </div>
+                  <input 
+                    type="email" 
+                    [formControl]="newsletterEmail"
+                    placeholder="Introduce tu email aquí..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-zinc-900/90 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-650 text-xs focus:border-violet-600 focus:outline-none transition duration-150" />
+                </div>
+                <button 
+                  (click)="onSubscribeNewsletter()"
+                  [disabled]="newsletterEmail.invalid"
+                  class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-550 disabled:from-zinc-900 disabled:to-zinc-900 disabled:text-zinc-650 disabled:border-zinc-800 text-white font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.2)] hover:shadow-[0_0_20px_rgba(139,92,246,0.35)] shrink-0 flex items-center justify-center space-x-1.5 transition-all duration-200 cursor-pointer">
+                  <span>Suscribirse</span>
+                  <mat-icon class="text-sm">send</mat-icon>
+                </button>
+              </div>
+            </div>
           </div>
         </section>
       }
@@ -904,9 +1192,11 @@
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             
-            <button 
-              type="button" 
+            <div 
+              role="button"
+              tabindex="0"
               (click)="store.restockEvents()"
+              (keydown.enter)="store.restockEvents()"
               class="p-4 bg-zinc-900/40 hover:bg-zinc-900/80 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl transition text-left cursor-pointer space-y-1 focus:outline-none">
               <div class="flex items-center space-x-2 text-xs font-bold text-[#60a5fa]">
                 <mat-icon class="text-base">shuffle_on</mat-icon>
@@ -915,7 +1205,7 @@
               <p class="text-[10px] text-zinc-450 leading-relaxed font-normal">
                 Suma +50 pases de forma inmediata a espectáculos con niveles crítico o bajo de entradas.
               </p>
-            </button>
+            </div>
 
             <div class="p-4 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl select-none text-left space-y-1">
               <div class="text-xs font-bold text-violet-400 flex items-center space-x-1.5">
@@ -1014,7 +1304,7 @@
               <button 
                 type="submit" 
                 [disabled]="store.adminEventForm.invalid"
-                class="flex-1 py-2.5 text-xs font-black bg-blue-640 hover:bg-blue-600 disabled:bg-zinc-850 text-white rounded-xl shadow-md transition cursor-pointer flex items-center justify-center space-x-1.5 focus:outline-none">
+                class="flex-1 py-2.5 text-xs font-black bg-blue-600 hover:bg-blue-600 disabled:bg-zinc-850 text-white rounded-xl shadow-md transition cursor-pointer flex items-center justify-center space-x-1.5 focus:outline-none">
                 <mat-icon class="text-sm">add_box</mat-icon>
                 <span>REVELAR EVENTO</span>
               </button>

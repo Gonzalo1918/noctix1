@@ -24,6 +24,8 @@ export class NoctixStore implements OnDestroy {
   activeTab = signal<'events' | 'my-tickets' | 'resale-market' | 'how-it-works' | 'admin' | 'policies' | 'login' | 'event-detail'>('events');
   authMode = signal<'login' | 'register' | 'recover'>('login');
   selectedCategory = signal<string>('Todos');
+  startDateFilter = signal<string>('');
+  endDateFilter = signal<string>('');
   selectedEventId = signal<string | null>(null);
 
   // --- Interaction & UI Modal Signals ---
@@ -68,25 +70,66 @@ export class NoctixStore implements OnDestroy {
   filteredEvents = computed(() => {
     const category = this.selectedCategory();
     const list = this.eventsList();
-    if (category === 'Todos' || !category) {
-      return list;
+    const startVal = this.startDateFilter();
+    const endVal = this.endDateFilter();
+
+    let result = list;
+
+    // 1. Filter by category
+    if (category && category !== 'Todos') {
+      if (category === 'Reggaeton') {
+        result = result.filter(e => e.category === 'Reggaeton');
+      } else if (category === 'Electrónica') {
+        result = result.filter(e => e.category === 'Electrónica');
+      } else if (category === 'En Vivo') {
+        result = result.filter(e => e.category === 'En Vivo');
+      } else if (category === 'VIP') {
+        result = result.filter(e => e.id === 'evt-101' || e.id === 'evt-105');
+      } else if (category === 'Bares') {
+        result = result.filter(e => e.id === 'evt-104' || e.badge?.includes('BAR'));
+      } else {
+        result = result.filter(e => e.category === category);
+      }
     }
-    if (category === 'Reggaeton') {
-      return list.filter(e => e.category === 'Reggaeton');
+
+    // 2. Filter by date range (dates in list are e.g. "24 Junio 2026")
+    if (startVal || endVal) {
+      const months: Record<string, number> = {
+        enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
+        julio: 6, agosto: 7, septiembre: 8, octubre: 9, noviembre: 10, diciembre: 11
+      };
+
+      const parseEvtDate = (dateStr: string): Date | null => {
+        if (!dateStr) return null;
+        const parts = dateStr.trim().split(/\s+/);
+        if (parts.length < 3) return null;
+        const day = parseInt(parts[0], 10);
+        const monthStr = parts[1].toLowerCase();
+        const year = parseInt(parts[2], 10);
+        const month = months[monthStr] !== undefined ? months[monthStr] : 0;
+        return new Date(year, month, day);
+      };
+
+      if (startVal) {
+        const [sy, sm, sd] = startVal.split('-').map(Number);
+        const startDate = new Date(sy, sm - 1, sd, 0, 0, 0);
+        result = result.filter(e => {
+          const d = parseEvtDate(e.date);
+          return d ? d >= startDate : true;
+        });
+      }
+
+      if (endVal) {
+        const [ey, em, ed] = endVal.split('-').map(Number);
+        const endDate = new Date(ey, em - 1, ed, 23, 59, 59);
+        result = result.filter(e => {
+          const d = parseEvtDate(e.date);
+          return d ? d <= endDate : true;
+        });
+      }
     }
-    if (category === 'Electrónica') {
-      return list.filter(e => e.category === 'Electrónica');
-    }
-    if (category === 'En Vivo') {
-      return list.filter(e => e.category === 'En Vivo');
-    }
-    if (category === 'VIP') {
-      return list.filter(e => e.id === 'evt-101' || e.id === 'evt-105');
-    }
-    if (category === 'Bares') {
-      return list.filter(e => e.id === 'evt-104' || e.badge?.includes('BAR'));
-    }
-    return list.filter(e => e.category === category as any);
+
+    return result;
   });
 
   myTicketsList = computed(() => {
@@ -665,6 +708,14 @@ export class NoctixStore implements OnDestroy {
     setTimeout(() => {
       this.showSuccessToast.set(false);
     }, 4500);
+  }
+
+  clearFilters() {
+    this.selectedCategory.set('Todos');
+    this.startDateFilter.set('');
+    this.endDateFilter.set('');
+    this.addTelemetryLog('info', 'Filtros de búsqueda reiniciados a los valores por defecto.');
+    this.triggerToast('Filtros de búsqueda restablecidos.');
   }
 
   // --- Router Synchronization Effects ---
