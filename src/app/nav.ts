@@ -73,8 +73,24 @@ import { NoctixStore } from './noctix-store';
       </nav>
 
       <!-- Profile & Identity Status Indicators -->
-      <div class="flex items-center space-x-4 ml-4 lg:ml-8">
+      <div class="flex items-center space-x-2 md:space-x-4 ml-auto lg:ml-8">
         
+        <!-- Crear Evento CTA Button -->
+        <button 
+          (click)="store.isLoggedIn() ? store.activeTab.set('create-event') : store.activeTab.set('login')"
+          [class]="store.activeTab() === 'create-event' ? 'bg-amber-600 font-bold border-transparent text-white shadow-[0_0_12px_rgba(245,158,11,0.25)]' : 'bg-zinc-900 border-amber-700/50 text-amber-500 hover:bg-amber-950/40 hover:border-amber-500 hover:text-amber-400'"
+          class="hidden sm:flex px-4 py-2 text-xs font-bold border rounded-xl transition cursor-pointer items-center space-x-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
+          <mat-icon class="text-sm">add_circle</mat-icon>
+          <span>Crear Evento</span>
+        </button>
+
+        <button 
+          (click)="store.isLoggedIn() ? store.activeTab.set('create-event') : store.activeTab.set('login')"
+          [class]="store.activeTab() === 'create-event' ? 'bg-amber-600 text-white border-transparent shadow-[0_0_12px_rgba(245,158,11,0.25)]' : 'bg-zinc-900 border-amber-700/50 text-amber-500 hover:bg-amber-950/40 hover:border-amber-500'"
+          class="sm:hidden p-2 text-xs font-bold border rounded-xl transition cursor-pointer flex items-center focus:outline-none focus:ring-1 focus:ring-amber-500">
+          <mat-icon class="text-base">add_circle</mat-icon>
+        </button>
+
         @if (store.isLoggedIn()) {
           <!-- User Profile Details -->
           <div class="hidden sm:flex items-center space-x-2 text-right mr-2">

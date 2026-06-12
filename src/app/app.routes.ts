@@ -15,6 +15,7 @@ export const routes: Routes = [
   { path: 'resale-market', component: DummyRouteComponent },
   { path: 'how-it-works', component: DummyRouteComponent },
   { path: 'policies', component: DummyRouteComponent },
+  { path: 'create-event', component: DummyRouteComponent },
   { path: 'evento/:id', component: DummyRouteComponent },
   { path: 'events', redirectTo: '', pathMatch: 'full' },
   { path: '', component: DummyRouteComponent },

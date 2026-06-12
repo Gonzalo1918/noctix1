@@ -21,7 +21,7 @@ export class NoctixStore implements OnDestroy {
   currentUserNickname = signal<string>('');
 
   // --- Tab & Custom Navigation Signal ---
-  activeTab = signal<'events' | 'my-tickets' | 'resale-market' | 'how-it-works' | 'admin' | 'policies' | 'login' | 'event-detail'>('events');
+  activeTab = signal<'events' | 'my-tickets' | 'resale-market' | 'how-it-works' | 'admin' | 'policies' | 'login' | 'event-detail' | 'create-event'>('events');
   authMode = signal<'login' | 'register' | 'recover'>('login');
   selectedCategory = signal<string>('Todos');
   startDateFilter = signal<string>('');
@@ -53,6 +53,7 @@ export class NoctixStore implements OnDestroy {
   recoverForm!: FormGroup;
   adminEventForm!: FormGroup;
   checkoutForm!: FormGroup;
+  createEventForm!: FormGroup;
 
   // --- Computed Derived Subview Signals (Optimal Rendering) ---
   selectedEvent = computed(() => {
@@ -196,6 +197,18 @@ export class NoctixStore implements OnDestroy {
       email: new FormControl('', [Validators.required, Validators.email]),
       quantity: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(5)]),
       paymentMethod: new FormControl('MercadoPago', [Validators.required])
+    });
+
+    this.createEventForm = new FormGroup({
+      title: new FormControl('', [Validators.required]),
+      description: new FormControl('', [Validators.required]),
+      category: new FormControl('Electrónica', [Validators.required]),
+      location: new FormControl('', [Validators.required]),
+      date: new FormControl('', [Validators.required]),
+      time: new FormControl('23:00 - 05:00', [Validators.required]),
+      price: new FormControl(5000, [Validators.required, Validators.min(0)]),
+      stock: new FormControl(100, [Validators.required, Validators.min(1)]),
+      image: new FormControl('', [])
     });
   }
 
@@ -701,6 +714,46 @@ export class NoctixStore implements OnDestroy {
     this.triggerToast('Se sumaron 50 entradas extra a los eventos casi agotados.');
   }
 
+  // --- User Event Creation ---
+  submitCreateEvent() {
+    if (this.createEventForm.invalid) return;
+    const val = this.createEventForm.value;
+
+    const newEvent: Event = {
+      id: 'evt-' + Math.floor(1000 + Math.random() * 9000),
+      title: val.title,
+      description: val.description,
+      location: val.location,
+      price: val.price,
+      stock: val.stock,
+      date: val.date ? val.date.split('-').reverse().join('/') : 'Por definir', // simple format
+      time: val.time,
+      image: val.image || (val.category === 'Electrónica' ? 
+        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop' :
+        val.category === 'Reggaeton' ? 
+        'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop' :
+        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop'),
+      category: val.category,
+      badge: 'NUEVO'
+    };
+
+    this.eventsList.update(all => [...all, newEvent]);
+    this.saveData('events');
+
+    this.addTelemetryLog('success', `🎉 Nuevo Evento Creado: "${newEvent.title}" por ${this.currentUserNickname()}.`);
+    this.triggerToast(`Publicaste el evento "${newEvent.title}" con éxito.`);
+
+    // Reset fields
+    this.createEventForm.reset({
+      category: 'Electrónica',
+      price: 5000,
+      stock: 100,
+      time: '23:00 - 05:00'
+    });
+    this.activeTab.set('events');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   // --- Custom Alert Toast Trigger ---
   triggerToast(message: string) {
     this.toastMessage.set(message);
@@ -779,6 +832,8 @@ export class NoctixStore implements OnDestroy {
       if (this.activeTab() !== 'how-it-works') this.activeTab.set('how-it-works');
     } else if (path === 'policies') {
       if (this.activeTab() !== 'policies') this.activeTab.set('policies');
+    } else if (path === 'create-event') {
+      if (this.activeTab() !== 'create-event') this.activeTab.set('create-event');
     } else if (path === '' || path === 'events') {
       if (this.activeTab() !== 'events') this.activeTab.set('events');
     }
