@@ -1,16 +1,26 @@
-<div class="container animate-fade-in" style="max-width: 400px;">
-  <div class="card" style="text-align: center;">
-    <h1 class="title">Acceder</h1>
-    <p style="color: #a1a1aa; margin-bottom: 2rem;">Inicia sesión para gestionar eventos.</p>
-    
-    <label style="text-align: left;">Email</label>
-    <input type="email" placeholder="tucorreo@mail.com" />
-    
-    <label style="text-align: left;">Contraseña</label>
-    <input type="password" placeholder="******" />
-    
-    <button class="button-primary" style="width: 100%; margin-top: 1rem;" (click)="doLogin()">
-      Iniciar Sesión
-    </button>
+<div class="container animate-fade-in" style="max-width: 900px;">
+  <div class="card">
+    <div class="access-panel">
+      <div class="access-text">
+        <h1 class="title-small">Acceder</h1>
+        <p class="access-sub">Iniciá sesión para gestionar eventos en la red Noctix.</p>
+      </div>
+      
+      <div class="access-form">
+        <div class="form-group-horizontal">
+          <label>Email</label>
+          <input type="email" placeholder="tucorreo@mail.com" />
+        </div>
+        
+        <div class="form-group-horizontal">
+          <label>Contraseña</label>
+          <input type="password" placeholder="******" />
+        </div>
+        
+        <button class="button-primary submit-btn-horizontal" (click)="doLogin()">
+          Iniciar Sesión
+        </button>
+      </div>
+    </div>
   </div>
 </div>

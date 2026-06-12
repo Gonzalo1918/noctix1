@@ -1,18 +1,48 @@
 <div class="container animate-fade-in">
-  <h1 class="title">Explorar Eventos</h1>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 class="title" style="margin-bottom: 0;">Explorar Eventos</h1>
+    <span style="color: #a1a1aa; font-size: 0.9rem;">Entity: Event (name, description)</span>
+  </div>
+
   <div class="events-grid">
-    @for (event of store.events(); track event.id) {
+    @for (event of eventService.eventsList(); track event.id) {
       <div class="card">
-        <h3>{{ event.title }}</h3>
-        <p style="color: #a1a1aa; font-size: 0.9rem; margin-bottom: 1rem;">{{ event.date }} - {{ event.location }}</p>
-        <p>{{ event.description }}</p>
-        <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-weight: bold; color: #d97706;">Ars ${{ event.price }}</span>
-          <button class="button-primary">Comprar</button>
-        </div>
+        @if (editingEventId() === event.id) {
+          <!-- Modo Edición -->
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label style="font-size: 0.8rem; color: #a78bfa; font-weight: bold; text-transform: uppercase;">Nombre del Evento</label>
+            <input [(ngModel)]="editName" type="text" style="margin-bottom: 0.5rem;" />
+
+            <label style="font-size: 0.8rem; color: #a78bfa; font-weight: bold; text-transform: uppercase;">Descripción</label>
+            <textarea [(ngModel)]="editDescription" rows="3" style="margin-bottom: 1rem;"></textarea>
+
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button class="button-secondary" (click)="cancelEdit()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Cancelar</button>
+              <button class="button-primary" (click)="saveEdit(event.id!)" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Guardar</button>
+            </div>
+          </div>
+        } @else {
+          <!-- Vista Normal -->
+          <h3 style="margin-top: 0; font-size: 1.5rem; font-weight: 600; color: white;">{{ event.name }}</h3>
+          <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1.5rem;">{{ event.description }}</p>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="button-secondary" (click)="startEdit(event)" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-color: rgba(139, 92, 246, 0.25);">
+                Editar
+              </button>
+              <button class="button-secondary" (click)="deleteEvent(event.id!)" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: #f87171; border-color: rgba(248, 113, 113, 0.25);">
+                Eliminar
+              </button>
+            </div>
+            <button class="button-primary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Ver entrada</button>
+          </div>
+        }
       </div>
     } @empty {
-      <p>No hay eventos disponibles.</p>
+      <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 1.5rem;">No hay eventos publicados todavía.</p>
+      </div>
     }
   </div>
 </div>

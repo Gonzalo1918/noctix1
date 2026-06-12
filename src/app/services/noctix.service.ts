@@ -2,14 +2,8 @@ import { Injectable, signal } from '@angular/core';
 
 export interface Event {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  location: string;
-  date: string;
-  time: string;
-  price: number;
-  stock: number;
-  category: string;
 }
 
 @Injectable({
@@ -19,9 +13,9 @@ export class NoctixService {
   isLoggedIn = signal<boolean>(false);
   events = signal<Event[]>([
     {
-       id: '1', title: 'Ultra Buenos Aires', description: 'El mejor festival.', 
-       location: 'Mandarine Park', date: '21/12/2026', time: '22:00', price: 25000, 
-       stock: 100, category: 'Electrónica'
+       id: '1', 
+       name: 'Ultra Buenos Aires 2026', 
+       description: 'El mejor festival de música electrónica del país.'
     }
   ]);
 

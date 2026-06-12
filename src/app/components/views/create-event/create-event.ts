@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NoctixService } from '../../../services/noctix.service';
+import { EventService } from '../../../services/event.service';
 
 @Component({
   selector: 'app-create-event',
@@ -11,25 +11,34 @@ import { NoctixService } from '../../../services/noctix.service';
   styleUrls: ['./create-event.css']
 })
 export class CreateEventComponent {
-  store = inject(NoctixService);
+  eventService = inject(EventService);
   router = inject(Router);
 
+  // Formulario con ÚNICAMENTE los campos 'name' y 'description' tal como indica la consigna
   createEventForm = new FormGroup({
-    title: new FormControl('', [Validators.required]),
-    description: new FormControl('', [Validators.required]),
-    category: new FormControl('Electrónica', [Validators.required]),
-    location: new FormControl('', [Validators.required]),
-    date: new FormControl('', [Validators.required]),
-    time: new FormControl('', [Validators.required]),
-    price: new FormControl(0, [Validators.required, Validators.min(0)]),
-    stock: new FormControl(1, [Validators.required, Validators.min(1)])
+    name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    description: new FormControl('', [Validators.required, Validators.minLength(10)])
   });
 
   submitCreateEvent() {
     if (this.createEventForm.invalid) return;
-    
-    // cast is safe since we only invoke upon valid.
-    this.store.createEvent(this.createEventForm.value as any);
-    this.router.navigate(['/']);
+
+    const payload = {
+      name: this.createEventForm.value.name as string,
+      description: this.createEventForm.value.description as string
+    };
+
+    // Consumir el eventService con CRUD POST
+    this.eventService.createEvent(payload).subscribe({
+      next: (response) => {
+        // Creado exitosamente vía API
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        // Fallback local robusto para demo interactiva cuando no este la API arriba
+        this.eventService.createEventLocal(payload);
+        this.router.navigate(['/']);
+      }
+    });
   }
 }
