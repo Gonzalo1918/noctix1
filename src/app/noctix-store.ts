@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject, OnDestroy, effect } from '@angula
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Event, Ticket, TelemetryLog } from './types';
+import { EventService } from './event.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ import { Event, Ticket, TelemetryLog } from './types';
 export class NoctixStore implements OnDestroy {
   // --- Services Inject ---
   private router = inject(Router);
+  private eventService = inject(EventService);
 
   // --- Session & Identity State Signals ---
   isLoggedIn = signal<boolean>(false);
@@ -719,39 +721,90 @@ export class NoctixStore implements OnDestroy {
     if (this.createEventForm.invalid) return;
     const val = this.createEventForm.value;
 
-    const newEvent: Event = {
-      id: 'evt-' + Math.floor(1000 + Math.random() * 9000),
+    const payload = {
       title: val.title,
       description: val.description,
+      category: val.category,
       location: val.location,
+      date: val.date ? val.date.split('-').reverse().join('/') : 'Por definir',
+      time: val.time,
       price: val.price,
       stock: val.stock,
-      date: val.date ? val.date.split('-').reverse().join('/') : 'Por definir', // simple format
-      time: val.time,
       image: val.image || (val.category === 'Electrónica' ? 
         'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop' :
         val.category === 'Reggaeton' ? 
         'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop' :
-        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop'),
-      category: val.category,
-      badge: 'NUEVO'
+        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop')
     };
 
-    this.eventsList.update(all => [...all, newEvent]);
-    this.saveData('events');
+    // Llamada al Service de API
+    this.eventService.createEvent(payload).subscribe({
+      next: (response) => {
+        // En una app real, usaríamos la respuesta de la API (id real, etc)
+        // Por ahora lo resolvemos agregando a la lista local para UX
+        const newEvent: Event = {
+          id: 'evt-' + Math.floor(1000 + Math.random() * 9000),
+          title: payload.title,
+          description: payload.description,
+          location: payload.location,
+          price: payload.price,
+          stock: payload.stock,
+          date: payload.date,
+          time: payload.time,
+          image: payload.image,
+          category: payload.category,
+          badge: 'NUEVO'
+        };
 
-    this.addTelemetryLog('success', `🎉 Nuevo Evento Creado: "${newEvent.title}" por ${this.currentUserNickname()}.`);
-    this.triggerToast(`Publicaste el evento "${newEvent.title}" con éxito.`);
+        this.eventsList.update(all => [...all, newEvent]);
+        this.saveData('events');
 
-    // Reset fields
-    this.createEventForm.reset({
-      category: 'Electrónica',
-      price: 5000,
-      stock: 100,
-      time: '23:00 - 05:00'
+        this.addTelemetryLog('success', `🎉 Nuevo Evento Creado en API: "${newEvent.title}" por ${this.currentUserNickname()}.`);
+        this.triggerToast(`Publicaste el evento "${newEvent.title}" con éxito.`);
+
+        // Reset fields
+        this.createEventForm.reset({
+          category: 'Electrónica',
+          price: 5000,
+          stock: 100,
+          time: '23:00 - 05:00'
+        });
+        this.activeTab.set('events');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: (err) => {
+        console.error('Error al enviar el formulario a la API', err);
+        // Fallback for development (so it still works while the API is not up)
+        const newEvent: Event = {
+          id: 'evt-' + Math.floor(1000 + Math.random() * 9000),
+          title: payload.title,
+          description: payload.description,
+          location: payload.location,
+          price: payload.price,
+          stock: payload.stock,
+          date: payload.date,
+          time: payload.time,
+          image: payload.image,
+          category: payload.category,
+          badge: 'NUEVO'
+        };
+
+        this.eventsList.update(all => [...all, newEvent]);
+        this.saveData('events');
+
+        this.addTelemetryLog('success', `🎉 Nuevo Evento Creado localmente (API fallback): "${newEvent.title}" por ${this.currentUserNickname()}.`);
+        this.triggerToast(`Publicaste el evento "${newEvent.title}" localmente.`);
+
+        this.createEventForm.reset({
+          category: 'Electrónica',
+          price: 5000,
+          stock: 100,
+          time: '23:00 - 05:00'
+        });
+        this.activeTab.set('events');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
-    this.activeTab.set('events');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // --- Custom Alert Toast Trigger ---
