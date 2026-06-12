@@ -1,23 +1,11 @@
 import { Routes } from '@angular/router';
-import { Component } from '@angular/core';
-
-@Component({
-  standalone: true,
-  template: ''
-})
-export class DummyRouteComponent {}
+import { HomeComponent } from './components/views/home/home';
+import { CreateEventComponent } from './components/views/create-event/create-event';
+import { LoginComponent } from './components/views/login/login';
 
 export const routes: Routes = [
-  { path: 'login', component: DummyRouteComponent },
-  { path: 'registro', component: DummyRouteComponent },
-  { path: 'recuperar', component: DummyRouteComponent },
-  { path: 'my-tickets', component: DummyRouteComponent },
-  { path: 'resale-market', component: DummyRouteComponent },
-  { path: 'how-it-works', component: DummyRouteComponent },
-  { path: 'policies', component: DummyRouteComponent },
-  { path: 'create-event', component: DummyRouteComponent },
-  { path: 'evento/:id', component: DummyRouteComponent },
-  { path: 'events', redirectTo: '', pathMatch: 'full' },
-  { path: '', component: DummyRouteComponent },
+  { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'create-event', component: CreateEventComponent },
   { path: '**', redirectTo: '' }
 ];

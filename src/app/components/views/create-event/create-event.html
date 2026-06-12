@@ -1,0 +1,53 @@
+<div class="container animate-fade-in">
+  <div class="card">
+    <h1 class="title" style="margin-top: 0">Publicar un Evento</h1>
+    <form [formGroup]="createEventForm" (ngSubmit)="submitCreateEvent()">
+      <label>Nombre del Evento</label>
+      <input formControlName="title" type="text" placeholder="Ej. Ultra Buenos Aires 2026" />
+
+      <label>Descripción</label>
+      <textarea formControlName="description" rows="3" placeholder="Detalles de artistas, dresscode, etc."></textarea>
+
+      <div style="display: flex; gap: 1rem;">
+        <div style="flex: 1;">
+          <label>Categoría</label>
+          <select formControlName="category">
+            <option value="Electrónica">Electrónica</option>
+            <option value="Reggaeton">Cachengue & Pop</option>
+            <option value="En Vivo">Bandas en Vivo</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <label>Ubicación</label>
+          <input formControlName="location" type="text" placeholder="Ej. Mandarine Park" />
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <div style="flex: 1;">
+          <label>Fecha</label>
+          <input formControlName="date" type="date" />
+        </div>
+        <div style="flex: 1;">
+          <label>Horario</label>
+          <input formControlName="time" type="text" placeholder="Ej. 23:00 - 05:00" />
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <div style="flex: 1;">
+          <label>Precio (ARS)</label>
+          <input formControlName="price" type="number" />
+        </div>
+        <div style="flex: 1;">
+          <label>Stock Inicial</label>
+          <input formControlName="stock" type="number" />
+        </div>
+      </div>
+
+      <button type="submit" class="button-primary" style="width: 100%; margin-top: 1rem;" [disabled]="createEventForm.invalid">
+        Publicar Evento
+      </button>
+    </form>
+  </div>
+</div>

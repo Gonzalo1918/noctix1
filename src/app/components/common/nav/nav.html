@@ -1,0 +1,15 @@
+<nav>
+  <div class="header-brand" routerLink="/">
+    <mat-icon>confirmation_number</mat-icon>
+    Noctix
+  </div>
+  <div class="nav-links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Explorar</a>
+    @if (store.isLoggedIn()) {
+      <a routerLink="/create-event" routerLinkActive="active">Crear Evento</a>
+      <button class="button-secondary" (click)="store.logout()">Salir</button>
+    } @else {
+      <button class="button-primary" routerLink="/login">Acceder</button>
+    }
+  </div>
+</nav>

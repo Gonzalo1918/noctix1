@@ -1,0 +1,18 @@
+<div class="container animate-fade-in">
+  <h1 class="title">Explorar Eventos</h1>
+  <div class="events-grid">
+    @for (event of store.events(); track event.id) {
+      <div class="card">
+        <h3>{{ event.title }}</h3>
+        <p style="color: #a1a1aa; font-size: 0.9rem; margin-bottom: 1rem;">{{ event.date }} - {{ event.location }}</p>
+        <p>{{ event.description }}</p>
+        <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: bold; color: #d97706;">Ars ${{ event.price }}</span>
+          <button class="button-primary">Comprar</button>
+        </div>
+      </div>
+    } @empty {
+      <p>No hay eventos disponibles.</p>
+    }
+  </div>
+</div>
