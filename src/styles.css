@@ -142,6 +142,17 @@ input, textarea, select {
   transition: border-color 0.3s ease;
 }
 
+input:disabled, textarea:disabled, select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: #8b5cf6;
