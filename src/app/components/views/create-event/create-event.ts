@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
 import { EventService } from '../../../services/event.service';
 
 @Component({
@@ -28,6 +30,14 @@ export class CreateEventComponent {
     return this.createEventForm.controls.ticketTiers as FormArray;
   }
 
+  totalTickets = toSignal(
+    this.ticketTiers.valueChanges.pipe(
+      startWith(this.ticketTiers.value),
+      map(tiers => tiers.reduce((total: number, tier: any) => total + (tier.quantity ? Number(tier.quantity) : 0), 0))
+    ),
+    { initialValue: 0 }
+  );
+
   createTicketTierFormGroup() {
     return new FormGroup({
       name: new FormControl('', Validators.required),
@@ -45,13 +55,6 @@ export class CreateEventComponent {
     if (this.ticketTiers.length > 1) {
       this.ticketTiers.removeAt(index);
     }
-  }
-
-  get totalTickets(): number {
-    return this.ticketTiers.controls.reduce((total, control) => {
-      const quantity = control.get('quantity')?.value;
-      return total + (quantity ? Number(quantity) : 0);
-    }, 0);
   }
 
   submitCreateEvent() {

@@ -21,6 +21,10 @@
   width: 100%;
 }
 
+.tier-row > div {
+  min-width: 0;
+}
+
 .remove-btn {
   height: auto;
   width: 100%;

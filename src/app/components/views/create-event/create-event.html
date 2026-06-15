@@ -26,7 +26,7 @@
         }
       </div>
 
-      <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+      <div class="tier-row" style="margin-bottom: 1.5rem;">
         <div style="flex: 1;">
           <label>Inicio (Fecha y Hora)</label>
           <input formControlName="startDate" type="datetime-local" />
@@ -76,7 +76,7 @@
         }
         
         <div style="text-align: right; color: #a78bfa; font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem;">
-          Total Entradas: {{ totalTickets }}
+          Total Entradas: {{ totalTickets() }}
         </div>
       </div>
 
