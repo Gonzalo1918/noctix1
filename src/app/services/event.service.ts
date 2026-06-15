@@ -2,10 +2,20 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
+export interface TicketTier {
+  name: string;
+  quantity: number;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface Event {
   id?: string;
   name: string;
   description: string;
+  startDate?: string;
+  endDate?: string;
+  ticketTiers?: TicketTier[];
 }
 
 @Injectable({

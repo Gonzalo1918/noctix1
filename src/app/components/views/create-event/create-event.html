@@ -16,7 +16,7 @@
         }
       </div>
 
-      <div style="margin-bottom: 2rem;">
+      <div style="margin-bottom: 1.5rem;">
         <label>Descripción</label>
         <textarea formControlName="description" rows="5" placeholder="Brinda detalles del show, grilla de artistas, dresscode y accesos..."></textarea>
         @if (createEventForm.get('description')?.invalid && createEventForm.get('description')?.touched) {
@@ -24,6 +24,60 @@
             La descripción es obligatoria y debe tener al menos 10 caracteres.
           </span>
         }
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="flex: 1;">
+          <label>Inicio (Fecha y Hora)</label>
+          <input formControlName="startDate" type="datetime-local" />
+        </div>
+        <div style="flex: 1;">
+          <label>Fin (Fecha y Hora)</label>
+          <input formControlName="endDate" type="datetime-local" />
+        </div>
+      </div>
+
+      <div style="margin-bottom: 2rem;" formArrayName="ticketTiers">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <label style="margin-bottom: 0;">Tandas de Entradas</label>
+          <button type="button" class="button-secondary" (click)="addTicketTier()" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">
+            + Agregar
+          </button>
+        </div>
+
+        @for (tier of ticketTiers.controls; track $index) {
+          <div [formGroupName]="$index" class="tier-card">
+            <div class="tier-row">
+              <div style="flex: 2;">
+                <label style="font-size: 0.75rem;">Nombre (Tanda)</label>
+                <input formControlName="name" type="text" placeholder="Ej. Early Bird" style="margin-bottom: 0;" />
+              </div>
+              <div style="flex: 1;">
+                <label style="font-size: 0.75rem;">Cantidad</label>
+                <input formControlName="quantity" type="number" min="1" placeholder="100" style="margin-bottom: 0;" />
+              </div>
+            </div>
+            <div class="tier-row">
+              <div style="flex: 1;">
+                <label style="font-size: 0.75rem;">Inicio Venta</label>
+                <input formControlName="startDate" type="datetime-local" style="margin-bottom: 0;" />
+              </div>
+              <div style="flex: 1;">
+                <label style="font-size: 0.75rem;">Fin Venta</label>
+                <input formControlName="endDate" type="datetime-local" style="margin-bottom: 0;" />
+              </div>
+            </div>
+            @if (ticketTiers.length > 1) {
+              <button type="button" class="remove-btn" (click)="removeTicketTier($index)">
+                Eliminar Tanda
+              </button>
+            }
+          </div>
+        }
+        
+        <div style="text-align: right; color: #a78bfa; font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem;">
+          Total Entradas: {{ totalTickets }}
+        </div>
       </div>
 
       <div style="display: flex; gap: 1rem;">
