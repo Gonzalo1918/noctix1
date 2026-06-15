@@ -185,6 +185,20 @@ nav {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.desktop-main-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .nav-links a {
@@ -201,6 +215,77 @@ nav {
 .nav-links a.active {
   color: #a78bfa;
   font-weight: 600;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.mobile-only-link {
+  display: none;
+}
+
+/* Mobile Menu Overlay Styles */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 76px; /* Below navbar roughly */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5, 5, 5, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mobile-menu-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.mobile-menu-content a {
+  color: #fafafa;
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-content a.active {
+  color: #a78bfa;
+}
+
+@media (max-width: 768px) {
+  nav {
+    padding: 1rem 1.5rem;
+  }
+
+  .desktop-main-links {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .my-account-btn {
+    display: block;
+  }
+
+  .logout-btn {
+    display: none;
+  }
+  
+  /* But show them in the overlay */
+  .mobile-only-link {
+    display: block;
+  }
 }
 
 .header-brand {

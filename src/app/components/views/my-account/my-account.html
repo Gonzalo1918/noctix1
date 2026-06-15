@@ -1,12 +1,11 @@
 <div class="container animate-fade-in">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <h1 class="title" style="margin-bottom: 0;">Explorar Eventos</h1>
+    <h1 class="title" style="margin-bottom: 0;">Mis Eventos</h1>
   </div>
 
   <div class="events-grid">
     @for (event of eventService.eventsList(); track event.id) {
-      <div class="card">
-        <!-- Vista Normal -->
+       <div class="card">
         <h3 style="margin-top: 0; font-size: 1.5rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">{{ event.name }}</h3>
         
         <div style="display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #a1a1aa;">
@@ -51,13 +50,19 @@
           </div>
         }
 
-        <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
-          <button class="button-primary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Ver entrada</button>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+          <button class="button-secondary" (click)="deleteEvent(event.id!)" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: #f87171; border-color: rgba(248, 113, 113, 0.25);">
+            Eliminar
+          </button>
+          <a class="button-primary" [routerLink]="['/edit-event', event.id]" style="padding: 0.4rem 1rem; font-size: 0.85rem; text-decoration: none;">
+            Editar Evento
+          </a>
         </div>
       </div>
     } @empty {
       <div class="card" style="text-align: center; padding: 4rem 2rem;">
-        <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 1.5rem;">No hay eventos publicados todavía.</p>
+        <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 1.5rem;">No tienes eventos creados todavía.</p>
+        <a routerLink="/create-event" class="button-primary" style="text-decoration: none;">Crear primer evento</a>
       </div>
     }
   </div>

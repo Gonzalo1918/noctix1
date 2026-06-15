@@ -3,13 +3,42 @@
     <mat-icon>confirmation_number</mat-icon>
     Noctix
   </div>
+  
   <div class="nav-links">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Explorar</a>
-    @if (store.isLoggedIn()) {
-      <a routerLink="/create-event" routerLinkActive="active">Crear Evento</a>
-      <button class="button-secondary" (click)="store.logout()">Salir</button>
-    } @else {
-      <button class="button-primary" routerLink="/login">Acceder</button>
-    }
+    <!-- Desktop main links -->
+    <div class="desktop-main-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Explorar</a>
+      @if (store.isLoggedIn()) {
+        <a routerLink="/create-event" routerLinkActive="active">Crear Evento</a>
+      }
+    </div>
+
+    <!-- Always visible actions -->
+    <div class="nav-actions">
+      @if (store.isLoggedIn()) {
+        <a routerLink="/my-account" class="button-primary my-account-btn" style="text-decoration: none; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Mi Cuenta</a>
+        <button class="button-secondary logout-btn" (click)="store.logout()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Salir</button>
+      } @else {
+        <button class="button-primary login-btn" routerLink="/login" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Acceder</button>
+      }
+      <button class="mobile-menu-btn button-secondary" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+        Menú
+      </button>
+    </div>
   </div>
 </nav>
+
+@if (isMobileMenuOpen()) {
+  <div class="mobile-menu-overlay" (click)="closeMobileMenu()">
+    <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Explorar</a>
+      @if (store.isLoggedIn()) {
+        <a routerLink="/create-event" routerLinkActive="active" (click)="closeMobileMenu()">Crear Evento</a>
+        <a routerLink="/my-account" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-only-link">Mi Cuenta</a>
+        <button class="button-secondary" (click)="store.logout(); closeMobileMenu()" style="width: 100%; margin-top: 1rem;">Salir</button>
+      } @else {
+        <button class="button-primary" routerLink="/login" (click)="closeMobileMenu()" style="width: 100%; margin-top: 1rem;">Acceder</button>
+      }
+    </div>
+  </div>
+}
