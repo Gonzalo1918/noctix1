@@ -25,6 +25,8 @@ export class EditEventComponent implements OnInit {
     description: new FormControl('', [Validators.required, Validators.minLength(10)]),
     startDate: new FormControl('', [Validators.required]),
     endDate: new FormControl('', [Validators.required]),
+    maxCapacity: new FormControl(0, [Validators.required, Validators.min(1)]),
+    hasSpecificTime: new FormControl(false),
     ticketTiers: new FormArray<any>([])
   });
 
@@ -32,13 +34,37 @@ export class EditEventComponent implements OnInit {
     return this.editEventForm.controls.ticketTiers as FormArray;
   }
 
+  getPackages(tierIndex: number) {
+    return this.ticketTiers.at(tierIndex).get('packages') as FormArray;
+  }
+
   totalTickets = toSignal(
     this.ticketTiers.valueChanges.pipe(
       startWith(this.ticketTiers.value),
-      map(tiers => tiers.reduce((total: number, tier: any) => total + (tier.quantity ? Number(tier.quantity) : 0), 0))
+      map(tiers => tiers.reduce((total: number, tier: any) => {
+        let tierTotal = 0;
+        if (tier.packages) {
+          tierTotal = tier.packages.reduce((pTotal: number, p: any) => pTotal + (p.quantity ? Number(p.quantity) : 0), 0);
+        }
+        return total + tierTotal;
+      }, 0))
     ),
     { initialValue: 0 }
   );
+
+  totalTiersCapacity = toSignal(
+    this.ticketTiers.valueChanges.pipe(
+      startWith(this.ticketTiers.value),
+      map(tiers => tiers.reduce((total: number, tier: any) => total + (tier.maxCapacity ? Number(tier.maxCapacity) : 0), 0))
+    ),
+    { initialValue: 0 }
+  );
+
+  getTierPackagesCapacity(tierIndex: number): number {
+    const packages = this.getPackages(tierIndex).value;
+    if (!packages) return 0;
+    return packages.reduce((total: number, p: any) => total + (p.quantity ? Number(p.quantity) : 0), 0);
+  }
 
   ngOnInit() {
     this.eventId = this.route.snapshot.paramMap.get('id');
@@ -63,17 +89,39 @@ export class EditEventComponent implements OnInit {
       name: event.name,
       description: event.description,
       startDate: event.startDate || '',
-      endDate: event.endDate || ''
+      endDate: event.endDate || '',
+      maxCapacity: (event as any).maxCapacity || 0,
+      hasSpecificTime: (event as any).hasSpecificTime || false
     });
 
     this.ticketTiers.clear();
     if (event.ticketTiers && event.ticketTiers.length > 0) {
       event.ticketTiers.forEach(tier => {
+        const pkgs = new FormArray<any>([]);
+        if (tier.packages && tier.packages.length > 0) {
+          tier.packages.forEach(p => pkgs.push(new FormGroup({
+            name: new FormControl(p.name, Validators.required),
+            price: new FormControl(p.price, [Validators.required, Validators.min(0)]),
+            quantity: new FormControl(p.quantity, [Validators.required, Validators.min(1)])
+          })));
+        } else {
+          // Fallback if no packages exist in this old tier
+          pkgs.push(this.createTicketPackageFormGroup());
+        }
+
+        let sDate = tier.startDate || '';
+        let eDate = tier.endDate || '';
+        if (!(event as any).hasSpecificTime) {
+          if (sDate.includes('T')) sDate = sDate.split('T')[0];
+          if (eDate.includes('T')) eDate = eDate.split('T')[0];
+        }
+
         this.ticketTiers.push(new FormGroup({
           name: new FormControl(tier.name, Validators.required),
-          quantity: new FormControl(tier.quantity, [Validators.required, Validators.min(1)]),
-          startDate: new FormControl(tier.startDate || '', Validators.required),
-          endDate: new FormControl(tier.endDate || '', Validators.required)
+          maxCapacity: new FormControl(tier.maxCapacity || 0, [Validators.required, Validators.min(1)]),
+          startDate: new FormControl(sDate),
+          endDate: new FormControl(eDate),
+          packages: pkgs
         }));
       });
     } else {
@@ -86,9 +134,20 @@ export class EditEventComponent implements OnInit {
   createTicketTierFormGroup() {
     return new FormGroup({
       name: new FormControl('', Validators.required),
-      quantity: new FormControl(0, [Validators.required, Validators.min(1)]),
-      startDate: new FormControl('', Validators.required),
-      endDate: new FormControl('', Validators.required)
+      maxCapacity: new FormControl(0, [Validators.required, Validators.min(1)]),
+      startDate: new FormControl(''),
+      endDate: new FormControl(''),
+      packages: new FormArray([
+        this.createTicketPackageFormGroup()
+      ])
+    });
+  }
+
+  createTicketPackageFormGroup() {
+    return new FormGroup({
+      name: new FormControl('', Validators.required),
+      price: new FormControl(0, [Validators.required, Validators.min(0)]),
+      quantity: new FormControl(0, [Validators.required, Validators.min(1)])
     });
   }
 
@@ -96,9 +155,38 @@ export class EditEventComponent implements OnInit {
     this.ticketTiers.push(this.createTicketTierFormGroup());
   }
 
+  duplicateTicketTier(index: number) {
+    const tierToCopy = this.ticketTiers.at(index).value;
+    const newTier = new FormGroup({
+      name: new FormControl(tierToCopy.name + ' (Copia)', Validators.required),
+      maxCapacity: new FormControl(tierToCopy.maxCapacity, [Validators.required, Validators.min(1)]),
+      startDate: new FormControl(tierToCopy.startDate, Validators.required),
+      endDate: new FormControl(tierToCopy.endDate, Validators.required),
+      packages: new FormArray(
+        tierToCopy.packages.map((p: any) => new FormGroup({
+          name: new FormControl(p.name, Validators.required),
+          price: new FormControl(p.price, [Validators.required, Validators.min(0)]),
+          quantity: new FormControl(p.quantity, [Validators.required, Validators.min(1)])
+        }))
+      )
+    });
+    this.ticketTiers.push(newTier);
+  }
+
   removeTicketTier(index: number) {
     if (this.ticketTiers.length > 1) {
       this.ticketTiers.removeAt(index);
+    }
+  }
+
+  addPackage(tierIndex: number) {
+    this.getPackages(tierIndex).push(this.createTicketPackageFormGroup());
+  }
+
+  removePackage(tierIndex: number, pkgIndex: number) {
+    const packages = this.getPackages(tierIndex);
+    if (packages.length > 1) {
+      packages.removeAt(pkgIndex);
     }
   }
 
@@ -110,8 +198,21 @@ export class EditEventComponent implements OnInit {
       description: this.editEventForm.value.description as string,
       startDate: this.editEventForm.value.startDate as string,
       endDate: this.editEventForm.value.endDate as string,
+      maxCapacity: this.editEventForm.value.maxCapacity as number,
+      hasSpecificTime: this.editEventForm.value.hasSpecificTime as boolean,
       ticketTiers: this.editEventForm.value.ticketTiers as any[]
     };
+
+    if (!eventData.hasSpecificTime) {
+      eventData.ticketTiers.forEach(tier => {
+        if (tier.startDate && !tier.startDate.includes('T')) {
+          tier.startDate += 'T00:00';
+        }
+        if (tier.endDate && !tier.endDate.includes('T')) {
+          tier.endDate += 'T23:59';
+        }
+      });
+    }
 
     // Actualizar via Service
     this.eventService.updateEvent(this.eventId, eventData).subscribe({

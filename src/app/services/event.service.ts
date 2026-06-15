@@ -2,11 +2,19 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
+export interface TicketPackage {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export interface TicketTier {
   name: string;
-  quantity: number;
   startDate?: string;
   endDate?: string;
+  hasSpecificTime?: boolean;
+  maxCapacity?: number;
+  packages?: TicketPackage[];  // Optional for backward compatibility, but we will mostly use it.
 }
 
 export interface Event {
@@ -15,6 +23,8 @@ export interface Event {
   description: string;
   startDate?: string;
   endDate?: string;
+  maxCapacity?: number;
+  hasSpecificTime?: boolean;
   ticketTiers?: TicketTier[];
 }
 
@@ -34,9 +44,9 @@ export class EventService {
       startDate: '2026-10-31T20:00',
       endDate: '2026-11-01T06:00',
       ticketTiers: [
-        { name: 'Early Bird', quantity: 1500, startDate: '2026-08-01T12:00', endDate: '2026-08-15T23:59' },
-        { name: 'Tier 1', quantity: 3000, startDate: '2026-08-16T00:00', endDate: '2026-09-30T23:59' },
-        { name: 'Tier 2', quantity: 5000, startDate: '2026-10-01T00:00', endDate: '2026-10-31T19:59' }
+        { name: 'Early Bird', startDate: '2026-08-01T12:00', endDate: '2026-08-15T23:59', hasSpecificTime: true, packages: [{ name: 'General', price: 10000, quantity: 1500 }] },
+        { name: 'Tier 1', startDate: '2026-08-16T00:00', endDate: '2026-09-30T23:59', packages: [{ name: 'General', price: 15000, quantity: 3000 }] },
+        { name: 'Tier 2', startDate: '2026-10-01T00:00', endDate: '2026-10-31T19:59', packages: [{ name: 'General', price: 20000, quantity: 5000 }] }
       ]
     },
     {
@@ -46,9 +56,9 @@ export class EventService {
       startDate: '2026-07-20T23:00',
       endDate: '2026-07-21T05:00',
       ticketTiers: [
-        { name: 'Preventa', quantity: 500, startDate: '2026-06-15T12:00', endDate: '2026-06-30T23:59' },
-        { name: 'General', quantity: 1500, startDate: '2026-07-01T00:00', endDate: '2026-07-20T22:59' },
-        { name: 'VIP', quantity: 200, startDate: '2026-06-15T12:00', endDate: '2026-07-20T22:59' }
+        { name: 'Preventa', startDate: '2026-06-15T12:00', endDate: '2026-06-30T23:59', packages: [{ name: 'General', price: 5000, quantity: 500 }] },
+        { name: 'General', startDate: '2026-07-01T00:00', endDate: '2026-07-20T22:59', packages: [{ name: 'General', price: 8000, quantity: 1500 }] },
+        { name: 'VIP', startDate: '2026-06-15T12:00', endDate: '2026-07-20T22:59', packages: [{ name: 'VIP', price: 15000, quantity: 200 }] }
       ]
     },
     {
@@ -58,8 +68,7 @@ export class EventService {
       startDate: '2026-09-12T19:00',
       endDate: '2026-09-12T23:30',
       ticketTiers: [
-        { name: 'Campo', quantity: 4000, startDate: '2026-07-01T10:00', endDate: '2026-09-12T18:00' },
-        { name: 'Platea', quantity: 800, startDate: '2026-07-01T10:00', endDate: '2026-09-12T18:00' }
+        { name: 'Fase 1', startDate: '2026-07-01T10:00', endDate: '2026-09-12T18:00', packages: [{ name: 'Campo', price: 10000, quantity: 4000 }, { name: 'Platea', price: 15000, quantity: 800 }] }
       ]
     }
   ]);

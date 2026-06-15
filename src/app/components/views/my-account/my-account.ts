@@ -15,7 +15,15 @@ export class MyAccountComponent {
 
   getTotalTickets(event: Event): number {
     if (!event.ticketTiers) return 0;
-    return event.ticketTiers.reduce((total, tier) => total + (tier.quantity ? Number(tier.quantity) : 0), 0);
+    return event.ticketTiers.reduce((total, tier) => {
+      let tierTotal = 0;
+      if (tier.packages) {
+        tierTotal = tier.packages.reduce((pTot, p) => pTot + (p.quantity ? Number(p.quantity) : 0), 0);
+      } else if ((tier as any).quantity) {
+        tierTotal = Number((tier as any).quantity);
+      }
+      return total + tierTotal;
+    }, 0);
   }
 
   deleteEvent(id: string) {

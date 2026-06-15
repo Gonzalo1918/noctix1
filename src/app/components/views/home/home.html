@@ -30,11 +30,10 @@
             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
               @for (tier of event.ticketTiers; track tier.name) {
                 <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.5rem; padding: 0.75rem;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <div style="margin-bottom: 0.5rem;">
                     <span style="font-weight: 600; color: #e4e4e7;">{{ tier.name }}</span>
-                    <span style="color: #a78bfa; font-weight: bold;">{{ tier.quantity }} entradas</span>
                   </div>
-                  <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: #a1a1aa;">
+                  <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: #a1a1aa; margin-bottom: 0.75rem;">
                     @if (tier.startDate) {
                       <span><strong style="color: #a1a1aa;">Venta inicio:</strong> {{ tier.startDate | date:'short' }}</span>
                     }
@@ -42,6 +41,16 @@
                       <span><strong style="color: #a1a1aa;">Venta fin:</strong> {{ tier.endDate | date:'short' }}</span>
                     }
                   </div>
+                  @if (tier.packages && tier.packages.length > 0) {
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                      @for (pkg of tier.packages; track pkg.name) {
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.25rem;">
+                          <span style="font-size: 0.85rem; color: #d1d5db;">{{ pkg.name }} <span style="color: #a1a1aa; font-size: 0.75rem;">(x{{ pkg.quantity }})</span></span>
+                          <span style="color: #10b981; font-weight: 600; font-size: 0.85rem;">{{ pkg.price | currency }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
               }
             </div>
