@@ -30,17 +30,37 @@ export class EventService {
     {
       id: '1',
       name: 'Ultra Buenos Aires 2026',
-      description: 'El festival de música electrónica más grande del país en Mandarine Park.'
+      description: 'El festival de música electrónica más grande del país en Mandarine Park.',
+      startDate: '2026-10-31T20:00',
+      endDate: '2026-11-01T06:00',
+      ticketTiers: [
+        { name: 'Early Bird', quantity: 1500, startDate: '2026-08-01T12:00', endDate: '2026-08-15T23:59' },
+        { name: 'Tier 1', quantity: 3000, startDate: '2026-08-16T00:00', endDate: '2026-09-30T23:59' },
+        { name: 'Tier 2', quantity: 5000, startDate: '2026-10-01T00:00', endDate: '2026-10-31T19:59' }
+      ]
     },
     {
       id: '2',
       name: 'Reggaeton Fest',
-      description: 'La mejor fiesta de cachengue, pop y reggaeton para bailar toda la noche.'
+      description: 'La mejor fiesta de cachengue, pop y reggaeton para bailar toda la noche.',
+      startDate: '2026-07-20T23:00',
+      endDate: '2026-07-21T05:00',
+      ticketTiers: [
+        { name: 'Preventa', quantity: 500, startDate: '2026-06-15T12:00', endDate: '2026-06-30T23:59' },
+        { name: 'General', quantity: 1500, startDate: '2026-07-01T00:00', endDate: '2026-07-20T22:59' },
+        { name: 'VIP', quantity: 200, startDate: '2026-06-15T12:00', endDate: '2026-07-20T22:59' }
+      ]
     },
     {
       id: '3',
       name: 'Rock en Vivo',
-      description: 'Bandas en vivo tocando los clásicos del rock nacional e internacional.'
+      description: 'Bandas en vivo tocando los clásicos del rock nacional e internacional.',
+      startDate: '2026-09-12T19:00',
+      endDate: '2026-09-12T23:30',
+      ticketTiers: [
+        { name: 'Campo', quantity: 4000, startDate: '2026-07-01T10:00', endDate: '2026-09-12T18:00' },
+        { name: 'Platea', quantity: 800, startDate: '2026-07-01T10:00', endDate: '2026-09-12T18:00' }
+      ]
     }
   ]);
 
