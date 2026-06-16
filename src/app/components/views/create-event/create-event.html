@@ -64,8 +64,8 @@
           </button>
         </div>
 
-        @for (tier of ticketTiers.controls; track $index) {
-          <div [formGroupName]="$index" class="tier-card">
+        @for (tier of ticketTiers.controls; track tierIndex; let tierIndex = $index) {
+          <div [formGroupName]="tierIndex" class="tier-card">
             <div class="tier-row" style="margin-bottom: 1rem;">
               <div style="flex: 2;">
                 <label style="font-size: 0.75rem;">Nombre (Tanda) *</label>
@@ -101,19 +101,17 @@
             <div formArrayName="packages" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.05);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                 <span style="font-size: 0.85rem; font-weight: 600; color: #a1a1aa;">Paquetes / Tipos de Entrada</span>
-                <button type="button" class="button-secondary" (click)="addPackage($index)" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">+ Paquete</button>
+                <button type="button" class="button-secondary" (click)="addPackage(tierIndex)" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">+ Paquete</button>
               </div>
 
               <div class="tier-row" style="margin-bottom: 0.25rem;">
                <div style="flex: 2; font-size: 0.7rem; color: #71717a">Nombre</div>
                <div style="flex: 1; font-size: 0.7rem; color: #71717a">Precio</div>
                <div style="flex: 1; font-size: 0.7rem; color: #71717a">Máximo</div>
-               @if (getPackages($index).length > 1) {
-                 <div style="width: 32px"></div>
-               }
+               <div style="width: 32px"></div>
               </div>
 
-              @for (pkg of getPackages($index).controls; track pkgIndex; let pkgIndex = $index) {
+              @for (pkg of getPackages(tierIndex).controls; track pkgIndex; let pkgIndex = $index) {
                 <div [formGroupName]="pkgIndex" class="tier-row" style="align-items: center; margin-bottom: 0.5rem;">
                   <div style="flex: 2;">
                     <input formControlName="name" type="text" placeholder="Ej. VIP + Bebida" style="margin-bottom: 0; font-size: 0.85rem;" />
@@ -124,29 +122,27 @@
                   <div style="flex: 1;">
                     <input formControlName="quantity" type="number" min="1" placeholder="Cant." style="margin-bottom: 0; font-size: 0.85rem;" />
                   </div>
-                  @if (getPackages($index).length > 1) {
-                    <button type="button" class="button-secondary" (click)="removePackage($index, pkgIndex)" style="margin-top: 0; padding: 0.6rem; color: #f87171; border-color: rgba(248,113,113,0.3);">X</button>
-                  }
+                  <button type="button" class="button-secondary" (click)="removePackage(tierIndex, pkgIndex)" style="margin-top: 0; padding: 0.6rem; color: #f87171; border-color: rgba(248,113,113,0.3); border-radius: 6px;"><mat-icon style="font-size: 1rem; width: 1rem; height: 1rem; display: flex; align-items: center; justify-content: center;">delete</mat-icon></button>
                 </div>
               }
 
-              @if (getTierPackagesCapacity($index) > (tier.value.maxCapacity || 0)) {
+              @if (getTierPackagesCapacity(tierIndex) > (tier.value.maxCapacity || 0)) {
                 <span style="color: #f87171; font-size: 0.75rem; display: block; margin-top: 0.5rem;">
-                   Los paquetes superan la capacidad de la tanda ({{ getTierPackagesCapacity($index) }} / {{ tier.value.maxCapacity || 0 }}).
+                   Los paquetes superan la capacidad de la tanda ({{ getTierPackagesCapacity(tierIndex) }} / {{ tier.value.maxCapacity || 0 }}).
                 </span>
-              } @else if (getTierPackagesCapacity($index) < (tier.value.maxCapacity || 0)) {
+              } @else if (getTierPackagesCapacity(tierIndex) < (tier.value.maxCapacity || 0)) {
                 <span style="color: #fbbf24; font-size: 0.75rem; display: block; margin-top: 0.5rem;">
-                   Los paquetes no cubren la capacidad de la tanda ({{ getTierPackagesCapacity($index) }} / {{ tier.value.maxCapacity || 0 }}).
+                   Los paquetes no cubren la capacidad de la tanda ({{ getTierPackagesCapacity(tierIndex) }} / {{ tier.value.maxCapacity || 0 }}).
                 </span>
               }
             </div>
 
             <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-              <button type="button" class="button-secondary" (click)="duplicateTicketTier($index)" style="font-size: 0.75rem; border-color: rgba(255,255,255,0.2);">
+              <button type="button" class="button-secondary" (click)="duplicateTicketTier(tierIndex)" style="font-size: 0.75rem; border-color: rgba(255,255,255,0.2);">
                 Duplicar Tanda
               </button>
               @if (ticketTiers.length > 1) {
-                <button type="button" class="remove-btn" (click)="removeTicketTier($index)" style="margin-top: 0; font-size: 0.75rem;">
+                <button type="button" class="remove-btn" (click)="removeTicketTier(tierIndex)" style="margin-top: 0; font-size: 0.75rem;">
                   Eliminar Tanda
                 </button>
               }

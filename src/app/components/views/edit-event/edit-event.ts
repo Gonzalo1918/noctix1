@@ -3,12 +3,13 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormArray } fr
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 import { EventService, Event } from '../../../services/event.service';
 
 @Component({
   selector: 'app-edit-event',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, MatIconModule],
   templateUrl: './edit-event.html',
   styleUrls: ['./edit-event.css']
 })
@@ -200,7 +201,7 @@ export class EditEventComponent implements OnInit {
 
   removePackage(tierIndex: number, pkgIndex: number) {
     const packages = this.getPackages(tierIndex);
-    if (packages.length > 1) {
+    if (packages.length > 0) {
       packages.removeAt(pkgIndex);
     }
   }

@@ -3,12 +3,13 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormArray } fr
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 import { EventService } from '../../../services/event.service';
 
 @Component({
   selector: 'app-create-event',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatIconModule],
   templateUrl: './create-event.html',
   styleUrls: ['./create-event.css']
 })
@@ -122,7 +123,7 @@ export class CreateEventComponent {
 
   removePackage(tierIndex: number, pkgIndex: number) {
     const packages = this.getPackages(tierIndex);
-    if (packages.length > 1) {
+    if (packages.length > 0) {
       packages.removeAt(pkgIndex);
     }
   }
