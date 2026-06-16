@@ -110,17 +110,28 @@ export class EditEventComponent implements OnInit {
         }
 
         let sDate = tier.startDate || '';
+        let sTime = '00:00';
+        if (sDate.includes('T')) {
+          const parts = sDate.split('T');
+          sDate = parts[0];
+          sTime = parts[1];
+        }
+
         let eDate = tier.endDate || '';
-        if (!(event as any).hasSpecificTime) {
-          if (sDate.includes('T')) sDate = sDate.split('T')[0];
-          if (eDate.includes('T')) eDate = eDate.split('T')[0];
+        let eTime = '23:59';
+        if (eDate.includes('T')) {
+          const parts = eDate.split('T');
+          eDate = parts[0];
+          eTime = parts[1];
         }
 
         this.ticketTiers.push(new FormGroup({
           name: new FormControl(tier.name, Validators.required),
           maxCapacity: new FormControl(tier.maxCapacity || 0, [Validators.required, Validators.min(1)]),
           startDate: new FormControl(sDate),
+          startTime: new FormControl(sTime),
           endDate: new FormControl(eDate),
+          endTime: new FormControl(eTime),
           packages: pkgs
         }));
       });
@@ -136,7 +147,9 @@ export class EditEventComponent implements OnInit {
       name: new FormControl('', Validators.required),
       maxCapacity: new FormControl(0, [Validators.required, Validators.min(1)]),
       startDate: new FormControl(''),
+      startTime: new FormControl('00:00'),
       endDate: new FormControl(''),
+      endTime: new FormControl('23:59'),
       packages: new FormArray([
         this.createTicketPackageFormGroup()
       ])
@@ -161,7 +174,9 @@ export class EditEventComponent implements OnInit {
       name: new FormControl(tierToCopy.name + ' (Copia)', Validators.required),
       maxCapacity: new FormControl(tierToCopy.maxCapacity, [Validators.required, Validators.min(1)]),
       startDate: new FormControl(tierToCopy.startDate, Validators.required),
+      startTime: new FormControl(tierToCopy.startTime || '00:00'),
       endDate: new FormControl(tierToCopy.endDate, Validators.required),
+      endTime: new FormControl(tierToCopy.endTime || '23:59'),
       packages: new FormArray(
         tierToCopy.packages.map((p: any) => new FormGroup({
           name: new FormControl(p.name, Validators.required),
@@ -193,26 +208,26 @@ export class EditEventComponent implements OnInit {
   submitEditEvent() {
     if (this.editEventForm.invalid || !this.eventId) return;
 
+    const hasSpecTime = this.editEventForm.value.hasSpecificTime as boolean;
     const eventData = {
       name: this.editEventForm.value.name as string,
       description: this.editEventForm.value.description as string,
       startDate: this.editEventForm.value.startDate as string,
       endDate: this.editEventForm.value.endDate as string,
       maxCapacity: this.editEventForm.value.maxCapacity as number,
-      hasSpecificTime: this.editEventForm.value.hasSpecificTime as boolean,
-      ticketTiers: this.editEventForm.value.ticketTiers as any[]
+      hasSpecificTime: hasSpecTime,
+      ticketTiers: this.editEventForm.value.ticketTiers?.map((tier: any) => {
+        const sTime = hasSpecTime ? (tier.startTime || '00:00') : '00:00';
+        const eTime = hasSpecTime ? (tier.endTime || '23:59') : '23:59';
+        return {
+          name: tier.name,
+          maxCapacity: tier.maxCapacity,
+          startDate: tier.startDate ? `${tier.startDate}T${sTime}` : '',
+          endDate: tier.endDate ? `${tier.endDate}T${eTime}` : '',
+          packages: tier.packages
+        };
+      }) || []
     };
-
-    if (!eventData.hasSpecificTime) {
-      eventData.ticketTiers.forEach(tier => {
-        if (tier.startDate && !tier.startDate.includes('T')) {
-          tier.startDate += 'T00:00';
-        }
-        if (tier.endDate && !tier.endDate.includes('T')) {
-          tier.endDate += 'T23:59';
-        }
-      });
-    }
 
     // Actualizar via Service
     this.eventService.updateEvent(this.eventId, eventData).subscribe({

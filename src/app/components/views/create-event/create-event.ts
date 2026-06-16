@@ -69,7 +69,9 @@ export class CreateEventComponent {
       name: new FormControl('', Validators.required),
       maxCapacity: new FormControl(0, [Validators.required, Validators.min(1)]),
       startDate: new FormControl('', Validators.required),
+      startTime: new FormControl('00:00'),
       endDate: new FormControl('', Validators.required),
+      endTime: new FormControl('23:59'),
       packages: new FormArray([
         this.createTicketPackageFormGroup()
       ])
@@ -94,7 +96,9 @@ export class CreateEventComponent {
       name: new FormControl(tierToCopy.name + ' (Copia)', Validators.required),
       maxCapacity: new FormControl(tierToCopy.maxCapacity, [Validators.required, Validators.min(1)]),
       startDate: new FormControl(tierToCopy.startDate, Validators.required),
+      startTime: new FormControl(tierToCopy.startTime || '00:00'),
       endDate: new FormControl(tierToCopy.endDate, Validators.required),
+      endTime: new FormControl(tierToCopy.endTime || '23:59'),
       packages: new FormArray(
         tierToCopy.packages.map((p: any) => new FormGroup({
           name: new FormControl(p.name, Validators.required),
@@ -126,26 +130,26 @@ export class CreateEventComponent {
   submitCreateEvent() {
     if (this.createEventForm.invalid) return;
 
+    const hasSpecTime = this.createEventForm.value.hasSpecificTime as boolean;
     const payload = {
       name: this.createEventForm.value.name as string,
       description: this.createEventForm.value.description as string,
       startDate: this.createEventForm.value.startDate as string,
       endDate: this.createEventForm.value.endDate as string,
       maxCapacity: this.createEventForm.value.maxCapacity as number,
-      hasSpecificTime: this.createEventForm.value.hasSpecificTime as boolean,
-      ticketTiers: this.createEventForm.value.ticketTiers as any[]
+      hasSpecificTime: hasSpecTime,
+      ticketTiers: this.createEventForm.value.ticketTiers?.map((tier: any) => {
+        const sTime = hasSpecTime ? (tier.startTime || '00:00') : '00:00';
+        const eTime = hasSpecTime ? (tier.endTime || '23:59') : '23:59';
+        return {
+          name: tier.name,
+          maxCapacity: tier.maxCapacity,
+          startDate: tier.startDate ? `${tier.startDate}T${sTime}` : '',
+          endDate: tier.endDate ? `${tier.endDate}T${eTime}` : '',
+          packages: tier.packages
+        };
+      }) || []
     };
-
-    if (!payload.hasSpecificTime) {
-      payload.ticketTiers.forEach(tier => {
-        if (tier.startDate && !tier.startDate.includes('T')) {
-          tier.startDate += 'T00:00';
-        }
-        if (tier.endDate && !tier.endDate.includes('T')) {
-          tier.endDate += 'T23:59';
-        }
-      });
-    }
 
     // Consumir el eventService con CRUD POST
     this.eventService.createEvent(payload).subscribe({

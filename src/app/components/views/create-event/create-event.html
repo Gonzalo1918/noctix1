@@ -80,19 +80,21 @@
             <div class="tier-row" style="margin-bottom: 1rem;">
               <div style="flex: 1;">
                 <label style="font-size: 0.75rem;">Inicio Venta *</label>
-                @if (createEventForm.value.hasSpecificTime) {
-                  <input formControlName="startDate" type="datetime-local" style="margin-bottom: 0;" />
-                } @else {
-                  <input formControlName="startDate" type="date" style="margin-bottom: 0;" />
-                }
+                <div style="display: flex; gap: 0.5rem;">
+                  <input formControlName="startDate" type="date" style="margin-bottom: 0; flex: 2;" />
+                  @if (createEventForm.value.hasSpecificTime) {
+                    <input formControlName="startTime" type="time" style="margin-bottom: 0; flex: 1;" />
+                  }
+                </div>
               </div>
               <div style="flex: 1;">
                 <label style="font-size: 0.75rem;">Fin Venta *</label>
-                @if (createEventForm.value.hasSpecificTime) {
-                  <input formControlName="endDate" type="datetime-local" style="margin-bottom: 0;" />
-                } @else {
-                  <input formControlName="endDate" type="date" style="margin-bottom: 0;" />
-                }
+                <div style="display: flex; gap: 0.5rem;">
+                  <input formControlName="endDate" type="date" style="margin-bottom: 0; flex: 2;" />
+                  @if (createEventForm.value.hasSpecificTime) {
+                    <input formControlName="endTime" type="time" style="margin-bottom: 0; flex: 1;" />
+                  }
+                </div>
               </div>
             </div>
 
