@@ -77,24 +77,23 @@
               </div>
             </div>
 
-            <div class="tier-row" style="margin-bottom: 1rem;">
-              <div style="flex: 1;">
-                <label style="font-size: 0.75rem;">Inicio Venta *</label>
-                <div style="display: flex; gap: 0.5rem;">
-                  <input formControlName="startDate" type="date" style="margin-bottom: 0; flex: 2;" />
-                  @if (createEventForm.value.hasSpecificTime) {
-                    <input formControlName="startTime" type="time" style="margin-bottom: 0; flex: 1;" />
-                  }
-                </div>
+            <div style="margin-bottom: 1rem;">
+              <label style="font-size: 0.75rem;">Inicio Venta *</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input formControlName="startDate" type="date" style="margin-bottom: 0; flex: 2;" />
+                @if (createEventForm.value.hasSpecificTime) {
+                  <input formControlName="startTime" type="time" style="margin-bottom: 0; flex: 1;" />
+                }
               </div>
-              <div style="flex: 1;">
-                <label style="font-size: 0.75rem;">Fin Venta *</label>
-                <div style="display: flex; gap: 0.5rem;">
-                  <input formControlName="endDate" type="date" style="margin-bottom: 0; flex: 2;" />
-                  @if (createEventForm.value.hasSpecificTime) {
-                    <input formControlName="endTime" type="time" style="margin-bottom: 0; flex: 1;" />
-                  }
-                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <label style="font-size: 0.75rem;">Fin Venta *</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input formControlName="endDate" type="date" style="margin-bottom: 0; flex: 2;" />
+                @if (createEventForm.value.hasSpecificTime) {
+                  <input formControlName="endTime" type="time" style="margin-bottom: 0; flex: 1;" />
+                }
               </div>
             </div>
 
